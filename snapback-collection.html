@@ -917,7 +917,7 @@ const S = {
 const ALBUM_SCREENS = new Set(['albums-hub','snapback','nfl-select','nfl-team','wc-select','wc-country']);
 
 // pack opening state
-const PO = { phase:'idle', pack:null, cards:[], flipped:[], legDelay:0 };
+const PO = { phase:'idle', pack:null, cards:[], flipped:[], legDelay:0, endTimer:null };
 
 // ═══════════════════════════════════════════════════════
 // HELPERS
@@ -1426,13 +1426,19 @@ function tapRevealCard(i){
     gsap.timeline()
       .to(rcard, {rotateY:90,  duration:.27, ease:'power2.in', onComplete(){ triggerRarityFX(c.r, rcard); }})
       .to(rcard, {rotateY:180, duration:.30, ease:'power2.out'});
+    const hint = document.getElementById('flip-hint');
     if(PO.flipped.every(Boolean)){
       const delay = 1500 + PO.legDelay;
-      setTimeout(()=>showEndScreen(), delay);
+      PO.endTimer = setTimeout(()=>showEndScreen(), delay);
       PO.legDelay = 0;
+      if(hint){
+        hint.textContent = 'TAP TO CONTINUE';
+        hint.style.cursor = 'pointer';
+        hint.onclick = ()=>{ clearTimeout(PO.endTimer); showEndScreen(); };
+      }
+    } else {
+      if(hint) hint.textContent = 'TAP NEXT';
     }
-    const hint = document.getElementById('flip-hint');
-    if(hint && PO.flipped.filter(Boolean).length < PO.cards.length) hint.textContent = 'TAP NEXT';
   }
 
   // Mandatory tension pulse — then branch by rarity
