@@ -1,0 +1,1791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Snapback Sports — Fan Collection</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0D0D0D;
+  --surface: #161616;
+  --surface2: #1E1E1E;
+  --gold: #F2C94C;
+  --gold-dim: #A67C1A;
+  --text: #FFFFFF;
+  --muted: #888888;
+  --common: #6B7280;
+  --rare: #3B82F6;
+  --epic: #c084fc;
+  --nav-h: 68px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;max-width:430px;margin:0 auto}
+#app{padding-bottom:var(--nav-h);min-height:100vh;overflow-x:hidden}
+
+/* SCREENS */
+.screen{display:none;animation:screenFade .25s ease both}
+.screen.active{display:block}
+
+/* BOTTOM NAV */
+#nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:var(--nav-h);background:var(--surface);border-top:1px solid #252525;display:flex;z-index:200}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;color:var(--muted);font-size:10px;font-weight:500;letter-spacing:.3px;padding-bottom:6px;position:relative;transition:color .2s}
+.nav-item.active{color:var(--gold)}
+.nav-item.active::before{content:'';position:absolute;top:0;left:20%;right:20%;height:2px;background:var(--gold);border-radius:0 0 2px 2px}
+.nav-icon{font-size:22px;line-height:1;display:flex;align-items:center;justify-content:center}
+
+/* SCREEN HEADER */
+.sh{display:flex;align-items:center;gap:10px;padding:12px 16px;position:sticky;top:0;background:var(--bg);z-index:100;border-bottom:1px solid #1e1e1e;min-height:52px}
+.sh-title{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:.5px;flex:1}
+.sh-badge{font-size:10px;font-weight:600;color:var(--gold);background:rgba(242,201,76,.12);border:1px solid rgba(242,201,76,.3);border-radius:20px;padding:2px 8px;white-space:nowrap}
+.back-btn{background:none;border:none;color:var(--gold);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;padding:6px 0;display:flex;align-items:center;gap:4px;white-space:nowrap}
+
+/* ── CARDS ─────────────────────────────────────────── */
+.card{border-radius:10px;overflow:hidden;position:relative;display:flex;flex-direction:column;cursor:pointer;transition:transform .2s ease,box-shadow .22s ease}
+.card:hover{transform:translateY(-8px)}
+.card:active{transform:scale(.95) !important}
+
+.card.common{background:linear-gradient(160deg,#1c1c1c,#111);border:1px solid var(--common);box-shadow:0 0 10px rgba(107,114,128,.25)}
+.card.rare  {background:linear-gradient(160deg,#0c1e3a,#080e1e);border:1px solid var(--rare);box-shadow:0 0 14px rgba(59,130,246,.3)}
+.card.epic  {background:linear-gradient(160deg,#1a0a2e,#0d0618);border:1px solid var(--epic);box-shadow:0 0 14px rgba(192,132,252,.3)}
+.card.legendary{background:linear-gradient(160deg,#1a1a1a,#0d0d0d);border:2px solid transparent;box-shadow:0 0 20px rgba(242,201,76,.45),0 0 45px rgba(242,201,76,.2),0 0 80px rgba(242,201,76,.08);animation:legendaryPulse 2.5s ease-in-out infinite;position:relative}
+.card.legendary::before{content:'';position:absolute;inset:-2px;border-radius:11px;background:linear-gradient(90deg,#F2C94C,#ff6b6b,#9b59b6,#3B82F6,#00d4aa,#F2C94C);background-size:300% 100%;animation:holo 3s linear infinite;z-index:-1}
+
+.card.common:hover{box-shadow:0 14px 30px rgba(107,114,128,.55)!important}
+.card.rare:hover  {box-shadow:0 14px 32px rgba(59,130,246,.65)!important;border-color:#60A5FA!important}
+.card.epic:hover  {box-shadow:0 14px 36px rgba(192,132,252,.7)!important;border-color:#d8b4fe!important}
+.card.legendary:hover{box-shadow:0 0 50px rgba(242,201,76,.9),0 0 100px rgba(242,201,76,.5),0 0 140px rgba(242,201,76,.25)!important;transform:translateY(-8px) scale(1.02)!important}
+
+.card-ravens-lj  {background:linear-gradient(160deg,#1a0a2e,#4a1a6e,#1a0a2e)!important}
+.card-ravens-team{background:linear-gradient(160deg,#1a0a2e,#2d1b4e)!important}
+
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;padding:6px 7px 3px}
+.rb{font-size:8px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;padding:2px 5px;border-radius:3px}
+.rb.common{background:rgba(107,114,128,.2);color:var(--common)}
+.rb.rare{background:rgba(59,130,246,.18);color:var(--rare)}
+.rb.epic{background:rgba(192,132,252,.18);color:var(--epic)}
+.rb.legendary{background:rgba(242,201,76,.14);color:var(--gold)}
+.card-ovr{font-family:'Bebas Neue',cursive;line-height:1}
+.card-ovr.common{color:var(--common)}
+.card-ovr.rare{color:var(--rare)}
+.card-ovr.epic{color:var(--epic)}
+.card-ovr.legendary{color:var(--gold)}
+
+/* CARD IMAGE — real photo or silhouette */
+.card-img{flex:1;overflow:hidden;margin:0 5px;border-radius:5px;background:linear-gradient(180deg,#0d0d14,#111118);position:relative;display:flex;align-items:flex-end;justify-content:center;min-height:40px}
+/* silhouette head */
+.card-img::before{content:'';position:absolute;top:10%;left:50%;transform:translateX(-50%);width:32%;aspect-ratio:1;background:rgba(255,255,255,.05);border-radius:50%;pointer-events:none}
+/* silhouette shoulders */
+.card-img::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:68%;height:52%;background:rgba(255,255,255,.05);border-radius:50% 50% 0 0;pointer-events:none}
+.player-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center 5%;z-index:2}
+.player-photo.err{display:none}
+
+/* HOVER STAT OVERLAY */
+.stat-overlay{position:absolute;inset:0;background:rgba(0,0,0,.88);backdrop-filter:blur(2px);border-radius:inherit;display:flex;flex-direction:column;justify-content:center;gap:4px;padding:8px;opacity:0;transition:opacity .2s;z-index:10;pointer-events:none}
+.card:hover .stat-overlay{opacity:1}
+.so-row{display:flex;align-items:center;gap:5px;width:100%}
+.so-key{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;width:26px;flex-shrink:0;line-height:1}
+.so-bar-wrap{flex:1;height:3px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden}
+.so-bar{height:100%;border-radius:2px}
+.so-val{font-family:'Bebas Neue',cursive;font-size:13px;width:20px;text-align:right;flex-shrink:0;line-height:1}
+.grid3 .so-key{font-size:7px;width:22px}
+.grid3 .so-val{font-size:11px}
+.grid3 .stat-overlay{gap:3px;padding:5px}
+.grid3 .so-bar-wrap{height:2px}
+
+.card-bot{padding:5px 7px 7px}
+.card-name{font-family:'Bebas Neue',cursive;letter-spacing:.4px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-sub{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-stats{display:flex;gap:2px;margin-top:4px}
+.sc{flex:1;text-align:center;background:rgba(255,255,255,.06);border-radius:3px;padding:2px 0}
+.sc-v{font-family:'Bebas Neue',cursive;display:block;line-height:1}
+.sc-k{color:var(--muted);display:block;text-transform:uppercase;letter-spacing:.3px}
+
+/* GRID SIZES */
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.grid3 .card,.grid3 .card-locked{aspect-ratio:2/3}
+.grid3 .card-ovr{font-size:18px}
+.grid3 .card-name{font-size:12px}
+.grid3 .card-sub{font-size:8px;margin:1px 0 3px}
+.grid3 .sc-v{font-size:10px}
+.grid3 .sc-k{font-size:6px}
+
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.grid2 .card,.grid2 .card-locked{aspect-ratio:2/3}
+.grid2 .card-ovr{font-size:26px}
+.grid2 .card-name{font-size:16px}
+.grid2 .card-sub{font-size:10px;margin:2px 0 5px}
+.grid2 .sc-v{font-size:13px}
+.grid2 .sc-k{font-size:7px}
+.grid2 .so-key{font-size:9px;width:28px}
+.grid2 .so-val{font-size:14px}
+.grid2 .so-bar-wrap{height:3px}
+.grid2 .stat-overlay{gap:6px;padding:10px}
+
+/* LOCKED */
+.card-locked{border-radius:10px;background:var(--surface2);border:1px solid #252525;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:default}
+.card-locked .lk-icon{font-size:20px;opacity:.35}
+.card-locked .lk-name{font-family:'Bebas Neue',cursive;font-size:12px;color:#555}
+.card-locked .lk-label{font-size:8px;color:var(--muted);letter-spacing:.4px;text-transform:uppercase}
+.grid2 .card-locked .lk-icon{font-size:28px}
+.grid2 .card-locked .lk-name{font-size:16px}
+.grid2 .card-locked .lk-label{font-size:9px}
+.card-locked.rare     {border-color:rgba(59,130,246,.3);box-shadow:0 0 10px rgba(59,130,246,.15)}
+.card-locked.epic     {border-color:rgba(242,201,76,.3);box-shadow:0 0 10px rgba(242,201,76,.15)}
+.card-locked.legendary{border-color:rgba(242,201,76,.4);box-shadow:0 0 14px rgba(242,201,76,.2);animation:goldPulse 2.5s ease-in-out infinite}
+
+/* PROFILE */
+.profile-top{display:flex;flex-direction:column;align-items:center;padding:28px 16px 16px;gap:7px}
+.avatar{width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,var(--gold-dim),var(--gold));display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',cursive;font-size:24px;color:#000;border:3px solid var(--gold);box-shadow:0 0 22px rgba(242,201,76,.4);animation:goldPulse 3s ease-in-out infinite}
+.profile-name{font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:1px;margin-top:2px}
+.era-badge{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,rgba(242,201,76,.14),rgba(242,201,76,.07));border:1px solid rgba(242,201,76,.38);border-radius:20px;padding:4px 14px 4px 4px;font-size:12px;font-weight:600;color:var(--gold)}
+.era-bitmoji{width:28px;height:28px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(242,201,76,.5);flex-shrink:0}
+.coin-row{display:flex;align-items:center;gap:6px;font-family:'Bebas Neue',cursive;font-size:26px;color:var(--gold);line-height:1}
+.p-card{background:var(--surface);border-radius:14px;padding:16px;margin:0 16px 10px}
+.prog-label{display:flex;justify-content:space-between;margin-bottom:8px;font-size:13px}
+.prog-label span:first-child{color:var(--muted)}
+.prog-label span:last-child{font-weight:600;color:var(--gold)}
+.prog-bar{height:6px;background:#272727;border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;background:var(--gold);border-radius:3px;animation:progFill 1.2s ease both}
+.stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:0 16px 12px}
+.stat-box{background:var(--surface);border-radius:12px;padding:12px 8px;text-align:center}
+.stat-box .sv{font-family:'Bebas Neue',cursive;font-size:22px;color:var(--gold);display:block;line-height:1}
+.stat-box .sk{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.btn-row{display:flex;flex-direction:column;gap:10px;padding:0 16px 16px}
+.btn-p{background:var(--gold);color:#000;border:none;border-radius:12px;padding:14px;font-family:'Bebas Neue',cursive;font-size:17px;letter-spacing:1px;cursor:pointer;width:100%;transition:opacity .15s,transform .1s}
+.btn-p:active{transform:scale(.98);opacity:.9}
+.btn-o{background:transparent;color:var(--gold);border:1.5px solid var(--gold);border-radius:12px;padding:13px;font-family:'Bebas Neue',cursive;font-size:17px;letter-spacing:1px;cursor:pointer;width:100%;transition:background .15s,transform .1s}
+.btn-o:active{background:rgba(242,201,76,.1);transform:scale(.98)}
+
+/* ALBUMS HUB */
+.hub-header{padding:20px 16px 10px}
+.hub-title{font-family:'Bebas Neue',cursive;font-size:26px;letter-spacing:1px}
+.hub-sub{font-size:13px;color:var(--muted);margin-top:2px}
+.hub-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px 16px}
+.col-tile{background:var(--surface);border-radius:14px;padding:18px 14px;cursor:pointer;transition:transform .15s;border:1px solid #222;display:flex;flex-direction:column;gap:7px;position:relative;overflow:hidden}
+.col-tile:active{transform:scale(.97)}
+.col-tile.gold{border-color:rgba(242,201,76,.3);box-shadow:0 0 18px rgba(242,201,76,.08)}
+.col-tile.blue{border-color:rgba(29,78,216,.35);box-shadow:0 0 18px rgba(29,78,216,.08)}
+.col-tile.green{border-color:rgba(22,163,74,.35);box-shadow:0 0 18px rgba(22,163,74,.08)}
+.col-tile.locked{opacity:.45;cursor:default}
+.ct-emoji{font-size:30px}
+.ct-name{font-family:'Bebas Neue',cursive;font-size:15px;letter-spacing:.4px;line-height:1.1}
+.ct-sub{font-size:11px;color:var(--muted)}
+.ct-prog{font-size:10px;font-weight:600;color:var(--gold);margin-top:2px}
+
+/* TEAM SELECT */
+.team-list{display:flex;flex-direction:column;gap:9px;padding:12px 16px}
+.team-tile{background:var(--surface);border-radius:13px;padding:14px;cursor:pointer;transition:transform .15s;display:flex;align-items:center;gap:12px;border:1px solid #222}
+.team-tile:active{transform:scale(.98)}
+.team-tile.featured{background:linear-gradient(135deg,#1a0a2e,#2d1b4e);border-color:rgba(242,201,76,.45);box-shadow:0 0 18px rgba(124,58,237,.18)}
+.team-tile.wc-owned{border-color:rgba(22,163,74,.3)}
+.te-badge{width:46px;height:46px;border-radius:11px;background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+.te-info{flex:1;min-width:0}
+.te-name{font-family:'Bebas Neue',cursive;font-size:17px;letter-spacing:.4px}
+.te-sub{font-size:11px;color:var(--muted);margin-top:1px}
+.te-prog{font-size:10px;font-weight:600;margin-top:3px}
+.te-ovr{font-family:'Bebas Neue',cursive;font-size:20px;color:var(--gold);flex-shrink:0}
+.te-chev{color:var(--muted);font-size:16px;flex-shrink:0}
+.feat-tag{display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:700;color:var(--gold);background:rgba(242,201,76,.1);border:1px solid rgba(242,201,76,.28);border-radius:10px;padding:1px 7px;margin-top:3px}
+
+/* TEAM DETAIL */
+.team-banner{margin:12px 16px;border-radius:13px;padding:14px;display:flex;align-items:center;gap:12px}
+.tb-emoji{font-size:38px}
+.tb-info{flex:1}
+.tb-name{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:.8px}
+.tb-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.tb-ovr{font-family:'Bebas Neue',cursive;font-size:38px;color:var(--gold);line-height:1}
+.ravens-sh{background:linear-gradient(135deg,#1a0a2e,#2d1b4e)!important;border-bottom:1px solid rgba(124,58,237,.3)!important}
+
+/* WC HEADER */
+.wc-sh{background:linear-gradient(135deg,#081a0f,#0d2418)!important;border-bottom:1px solid rgba(22,163,74,.25)!important}
+.wc-sh .sh-title{color:#4ade80}
+.wc-sh .sh-badge{color:#4ade80;background:rgba(74,222,128,.1);border-color:rgba(74,222,128,.3)}
+
+/* ── PACK SCREEN — 3D GLOWING CARDS ─────────────────── */
+.pack-screen-header{padding:20px 16px 10px}
+.pack-screen-title{font-family:'Bebas Neue',cursive;font-size:26px;letter-spacing:1px}
+.pack-screen-sub{font-size:13px;color:var(--muted);margin-top:2px}
+.pack-3d-list{display:flex;flex-direction:column;gap:12px;padding:0 16px}
+
+.pack-3d{border-radius:16px;padding:18px 16px;cursor:pointer;border:2px solid transparent;transition:transform .18s,border-color .18s;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden}
+.pack-3d:active{transform:scale(.97)!important}
+.pack-3d.sel{border-color:var(--gold)!important}
+.pack-3d.cant-afford{opacity:.35;cursor:not-allowed;pointer-events:none}
+
+.pack-3d.pk-snapback{background:linear-gradient(135deg,#1c1400,#2a1e00);animation:glowGold 2.2s ease-in-out infinite}
+.pack-3d.pk-nfl     {background:linear-gradient(135deg,#00102e,#001c50);animation:glowBlue 2.2s ease-in-out infinite}
+.pack-3d.pk-wc      {background:linear-gradient(135deg,#001c0e,#002c18);animation:glowGreen 2.2s ease-in-out infinite}
+
+.pack-3d-vis{width:60px;height:80px;border-radius:7px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;position:relative;overflow:hidden}
+.pack-3d-vis::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 5px,rgba(255,255,255,.03) 5px,rgba(255,255,255,.03) 6px)}
+.pack-3d-vis-text{font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:3px;position:relative;z-index:1}
+.pack-3d-vis-sub{font-family:'Bebas Neue',cursive;font-size:7px;letter-spacing:2px;position:relative;z-index:1;opacity:.6}
+.pk-snapback .pack-3d-vis{background:linear-gradient(160deg,#3a2800,#5a3e00);border:1px solid rgba(242,201,76,.35)}
+.pk-snapback .pack-3d-vis-text{color:rgba(242,201,76,.85)}
+.pk-nfl      .pack-3d-vis{background:linear-gradient(160deg,#001840,#002a60);border:1px solid rgba(59,130,246,.35)}
+.pk-nfl      .pack-3d-vis-text{color:rgba(59,130,246,.85)}
+.pk-wc       .pack-3d-vis{background:linear-gradient(160deg,#002010,#003820);border:1px solid rgba(22,163,74,.35)}
+.pk-wc       .pack-3d-vis-text{color:rgba(22,163,74,.85)}
+
+.pack-3d-info{flex:1}
+.pack-3d-name{font-family:'Bebas Neue',cursive;font-size:19px;letter-spacing:.5px}
+.pack-3d-desc{font-size:11px;color:var(--muted);margin-top:3px}
+.pack-3d-cost{font-family:'Bebas Neue',cursive;font-size:22px;flex-shrink:0;display:flex;align-items:center;gap:4px}
+.pk-snapback .pack-3d-cost{color:var(--gold)}
+.pk-nfl      .pack-3d-cost{color:#60A5FA}
+.pk-wc       .pack-3d-cost{color:#4ade80}
+
+.pack-balance-row{display:flex;align-items:center;justify-content:space-between;padding:12px 16px 8px;font-size:12px;color:var(--muted)}
+.pack-balance-val{font-family:'Bebas Neue',cursive;font-size:20px;color:var(--gold);display:inline-flex;align-items:center;gap:4px}
+.pack-open-wrap{padding:0 16px 16px}
+
+/* ── PACK OVERLAY — CINEMATIC ────────────────────────── */
+#pack-overlay{display:none;position:fixed;inset:0;width:100vw;height:100dvh;background:#0D0D0D;z-index:1000;flex-direction:column;align-items:center;overflow:hidden}
+#pack-overlay.on{display:flex;animation:screenFade .35s ease both}
+#po-fx{position:absolute;inset:0;pointer-events:none;z-index:20;overflow:hidden}
+
+/* PHASE: pulsing pack */
+.po-pack-scene{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;width:100%;gap:20px;position:relative}
+.po-pack-vis{width:120px;height:162px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;position:relative;overflow:hidden;cursor:pointer;transition:transform .1s}
+.po-pack-vis:active{transform:scale(.95)}
+.po-pack-vis::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 6px,rgba(255,255,255,.03) 6px,rgba(255,255,255,.03) 7px)}
+.po-pack-vis-text{font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:4px;position:relative;z-index:1}
+.po-pack-vis-sub{font-family:'Bebas Neue',cursive;font-size:9px;letter-spacing:3px;opacity:.6;position:relative;z-index:1}
+.po-snapback-vis{background:linear-gradient(135deg,#3a2800,#6a4e00);border:2px solid rgba(242,201,76,.55);box-shadow:0 0 40px rgba(242,201,76,.35);animation:glowGold 1.4s ease-in-out infinite}
+.po-nfl-vis     {background:linear-gradient(135deg,#001840,#002a60);border:2px solid rgba(59,130,246,.55);box-shadow:0 0 40px rgba(59,130,246,.35);animation:glowBlue 1.4s ease-in-out infinite}
+.po-wc-vis      {background:linear-gradient(135deg,#002010,#004020);border:2px solid rgba(22,163,74,.55);box-shadow:0 0 40px rgba(22,163,74,.35);animation:glowGreen 1.4s ease-in-out infinite}
+.po-snapback-vis .po-pack-vis-text{color:rgba(242,201,76,.9)}
+.po-nfl-vis      .po-pack-vis-text{color:rgba(59,130,246,.9)}
+.po-wc-vis       .po-pack-vis-text{color:rgba(22,163,74,.9)}
+.po-pack-name{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:1px}
+.po-tap-hint{font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:3px;color:var(--muted);animation:tapPulse 1.2s ease-in-out infinite}
+
+/* ── PHYSICAL PACK STRUCTURE ─────────────────────────── */
+.po-pack-physical{width:140px;height:190px;border-radius:12px;position:relative;overflow:hidden;cursor:pointer}
+.po-pack-physical::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(-55deg,transparent,transparent 4px,rgba(255,255,255,.018) 4px,rgba(255,255,255,.018) 5px);z-index:1;pointer-events:none}
+.po-pack-physical::after{content:'';position:absolute;top:-60%;left:-80%;width:60%;height:200%;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.13) 50%,transparent 65%);z-index:3;animation:packShine 3.2s ease-in-out infinite;pointer-events:none}
+@keyframes packShine{0%{left:-80%}50%{left:130%}100%{left:130%}}
+.po-pack-notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:40px;height:5px;background:rgba(0,0,0,.6);border-radius:0 0 4px 4px;z-index:5}
+.po-pack-inner{position:absolute;inset:5px;border-radius:8px;z-index:2;pointer-events:none}
+.po-pack-bottom-bar{position:absolute;bottom:0;left:0;right:0;height:3px;z-index:5}
+.po-pack-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;z-index:4;padding-bottom:14px}
+.po-pack-charging{transition:box-shadow .4s ease;box-shadow:0 0 80px var(--pack-color,rgba(242,201,76,.9))!important}
+.po-pack-half{position:absolute;width:140px;height:95px;border-radius:12px;overflow:hidden;pointer-events:none;z-index:50}
+
+/* PHASE: cards reveal */
+.po-cards-scene{display:flex;flex-direction:column;align-items:center;width:100%;flex:1;padding:20px 0 0}
+.po-cards-row{display:flex;gap:8px;justify-content:center;padding:0 12px;width:100%}
+.po-card-slot{flex:1;max-width:66px;aspect-ratio:2/3;perspective:700px;opacity:0}
+.po-rcard{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.45,.05,.55,.95);cursor:pointer}
+.po-rcard.flipped{transform:rotateY(180deg)}
+.po-rcard-back,.po-rcard-front{position:absolute;inset:0;backface-visibility:hidden;border-radius:8px;overflow:hidden}
+.po-rcard-front{transform:rotateY(180deg)}
+.po-rcard-front .card{height:100%;width:100%}
+.po-rcard-back{background:linear-gradient(135deg,#0d0d1e,#1a1a36);border:1px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;position:absolute;inset:0;width:100%;height:100%;border-radius:8px;overflow:hidden}
+/* Shared hatch texture */
+.po-rcard-back::before{content:'';position:absolute;inset:0;border-radius:8px;background:repeating-linear-gradient(-55deg,transparent,transparent 4px,rgba(255,255,255,.025) 4px,rgba(255,255,255,.025) 5px);pointer-events:none;z-index:0}
+/* Shared center radial glow — color driven by --rarity-glow */
+.po-rcard-back::after{content:'';position:absolute;inset:0;border-radius:8px;background:radial-gradient(ellipse at 50% 50%,var(--rarity-glow,rgba(255,255,255,.05)) 0%,transparent 65%);pointer-events:none;z-index:1}
+.po-rcard-back-txt{font-family:'Bebas Neue',cursive;font-size:12px;letter-spacing:4px;position:relative;z-index:2;color:rgba(255,255,255,.1)}
+/* Rarity-aware card backs */
+.po-rcard-back.rarity-common{background:linear-gradient(135deg,#0f0f0f,#1a1a1a);border:1.5px solid rgba(107,114,128,.5);box-shadow:0 0 12px rgba(107,114,128,.2),inset 0 0 20px rgba(107,114,128,.05);--rarity-glow:rgba(107,114,128,.15)}
+.po-rcard-back.rarity-common .po-rcard-back-txt{color:rgba(107,114,128,.3)}
+.po-rcard-back.rarity-rare{background:linear-gradient(135deg,#020818,#050d2a);border:1.5px solid rgba(59,130,246,.7);box-shadow:0 0 20px rgba(59,130,246,.35),inset 0 0 30px rgba(59,130,246,.08);animation:glowPulseBlue 1.8s ease-in-out infinite;--rarity-glow:rgba(59,130,246,.18)}
+.po-rcard-back.rarity-rare .po-rcard-back-txt{color:rgba(59,130,246,.35)}
+.po-rcard-back.rarity-epic{background:linear-gradient(135deg,#1a0830,#0d0520);border:1.5px solid rgba(192,132,252,.7);box-shadow:0 0 24px rgba(192,132,252,.45),inset 0 0 30px rgba(192,132,252,.1);animation:glowPulseEpic 1.5s ease-in-out infinite;--rarity-glow:rgba(192,132,252,.2)}
+.po-rcard-back.rarity-epic .po-rcard-back-txt{color:rgba(192,132,252,.4)}
+.po-rcard-back.rarity-legendary{background:linear-gradient(135deg,#0a0800,#1a1400);border:2px solid transparent;box-shadow:0 0 32px rgba(242,201,76,.6),inset 0 0 40px rgba(242,201,76,.1);background-clip:padding-box;animation:glowPulseLeg 1.2s ease-in-out infinite;--rarity-glow:rgba(242,201,76,.25)}
+.po-rcard-back.rarity-legendary .po-rcard-back-txt{color:rgba(242,201,76,.4)}
+.po-rcard-back.rarity-legendary::before{content:'';position:absolute;inset:-2px;border-radius:10px;background:linear-gradient(90deg,#F2C94C,#ff6b6b,#9b59b6,#3B82F6,#F2C94C);background-size:300% 100%;animation:holoSweep 2s linear infinite;z-index:-1}
+@keyframes glowPulseBlue{0%,100%{box-shadow:0 0 20px rgba(59,130,246,.35),inset 0 0 30px rgba(59,130,246,.08)}50%{box-shadow:0 0 40px rgba(59,130,246,.6),inset 0 0 40px rgba(59,130,246,.15)}}
+@keyframes glowPulseEpic{0%,100%{box-shadow:0 0 24px rgba(192,132,252,.45),inset 0 0 30px rgba(192,132,252,.1)}50%{box-shadow:0 0 55px rgba(192,132,252,.8),inset 0 0 45px rgba(192,132,252,.18)}}
+@keyframes glowPulseLeg{0%,100%{box-shadow:0 0 32px rgba(242,201,76,.6),0 0 60px rgba(242,201,76,.2)}50%{box-shadow:0 0 80px rgba(242,201,76,.95),0 0 160px rgba(242,201,76,.5)}}
+@keyframes holoSweep{0%{background-position:0% 50%}100%{background-position:300% 50%}}
+.po-flip-hint{font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:2px;color:var(--muted);margin-top:16px;animation:tapPulse 1.4s ease-in-out infinite}
+.badge-new {position:absolute;top:-7px;left:50%;transform:translateX(-50%);font-size:7px;font-weight:700;padding:2px 6px;border-radius:7px;white-space:nowrap;z-index:10;background:#22c55e;color:#fff;letter-spacing:.5px}
+.badge-dupe{position:absolute;top:-7px;left:50%;transform:translateX(-50%);font-size:7px;font-weight:700;padding:2px 6px;border-radius:7px;white-space:nowrap;z-index:10;background:#E97316;color:#fff;letter-spacing:.5px}
+
+/* CARD LEGENDARY FLOAT — applied during legendary reveal */
+.card-leg-float{animation:legFloat 1.6s ease-in-out infinite!important;box-shadow:0 0 44px rgba(242,201,76,.95)!important}
+@keyframes legFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+
+/* END SCREEN */
+.po-end{display:flex;flex-direction:column;align-items:center;width:100%;flex:1;padding:20px 16px;animation:slideUp .4s ease both}
+.po-end-title{font-family:'Bebas Neue',cursive;font-size:26px;letter-spacing:1px;margin-bottom:16px}
+.po-end-row{display:flex;gap:7px;width:100%;justify-content:center;margin-bottom:16px}
+.po-end-card{flex:1;max-width:66px;aspect-ratio:2/3;position:relative}
+.po-end-card .card{height:100%;width:100%}
+.po-end-stats{display:flex;justify-content:space-between;width:100%;font-size:12px;color:var(--muted);padding:10px 0;border-top:1px solid #1e1e1e;border-bottom:1px solid #1e1e1e}
+.po-end-coins{font-family:'Bebas Neue',cursive;font-size:22px;color:var(--gold);margin:12px 0;display:flex;align-items:center;gap:6px}
+.po-end-btns{display:flex;flex-direction:column;gap:9px;width:100%}
+
+/* RARITY EFFECTS */
+.fx-common{position:absolute;inset:0;background:rgba(255,255,255,.18);animation:fxFlash .25s ease both;pointer-events:none}
+.fx-rare{position:absolute;inset:0;background:radial-gradient(circle at 50% 60%,rgba(59,130,246,.65) 0%,rgba(59,130,246,0) 65%);animation:fxRipple .7s ease both;pointer-events:none}
+.fx-epic-glow{position:absolute;inset:0;background:radial-gradient(circle at 50% 60%,rgba(242,201,76,.4) 0%,rgba(242,201,76,0) 60%);animation:fxFlash .7s ease both;pointer-events:none}
+.fx-epic-line{position:absolute;height:2px;background:linear-gradient(90deg,transparent,rgba(242,201,76,.9),transparent);left:0;right:0;animation:fxLightning .5s ease both;pointer-events:none}
+.fx-epic-line.l1{top:35%}
+.fx-epic-line.l2{top:55%;animation-delay:.15s;transform:rotate(-8deg)}
+.fx-blackout{position:absolute;inset:0;background:#000;animation:fxBlackout .6s ease both;pointer-events:none}
+.fx-legendary{position:absolute;inset:0;background:radial-gradient(circle at 50% 60%,rgba(242,201,76,.85) 0%,rgba(242,201,76,.3) 25%,rgba(242,201,76,0) 65%);animation:fxLegend 1.8s ease both;pointer-events:none}
+.fx-particle{position:absolute;width:7px;height:7px;border-radius:50%;top:55%;left:50%;pointer-events:none;animation:fxParticle .9s ease-out both}
+
+@keyframes fxFlash{0%,100%{opacity:0}20%{opacity:1}}
+@keyframes fxRipple{0%{transform:scale(0);opacity:1}100%{transform:scale(2);opacity:0}}
+@keyframes fxLightning{0%{opacity:0;transform:scaleX(0)}30%{opacity:1}100%{opacity:0;transform:scaleX(1)}}
+@keyframes fxBlackout{0%{opacity:0}20%{opacity:1}70%{opacity:1}100%{opacity:0}}
+@keyframes fxLegend{0%{opacity:0;transform:scale(.2)}25%{opacity:1;transform:scale(1)}80%{opacity:.8}100%{opacity:0}}
+@keyframes fxParticle{0%{transform:translate(-50%,-50%) rotate(var(--a)) translateX(0);opacity:1}100%{transform:translate(-50%,-50%) rotate(var(--a)) translateX(var(--d));opacity:0}}
+
+/* SCREEN SHAKE */
+.po-shake{animation:overlayShake .5s ease!important}
+@keyframes overlayShake{
+  0%,100%{transform:translateX(-50%)}
+  15%{transform:translateX(calc(-50% - 9px))}
+  30%{transform:translateX(calc(-50% + 9px))}
+  45%{transform:translateX(calc(-50% - 6px))}
+  60%{transform:translateX(calc(-50% + 6px))}
+  75%{transform:translateX(calc(-50% - 3px))}
+  90%{transform:translateX(calc(-50% + 3px))}
+}
+
+/* CLOSE BUTTON */
+.ov-close{position:absolute;top:14px;right:14px;background:var(--surface2);border:none;color:var(--muted);font-size:18px;width:34px;height:34px;border-radius:50%;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:30}
+.ov-close.on{display:flex}
+
+/* ── PROFILE SECTIONS ───────────────────────────────── */
+.p-section{margin:0 16px 14px}
+.p-section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.p-section-title{font-size:10px;font-weight:600;letter-spacing:.9px;text-transform:uppercase;color:var(--muted)}
+.edit-btn{background:none;border:none;font-size:13px;cursor:pointer;color:var(--muted);padding:3px 6px;border-radius:6px;transition:color .15s,background .15s}
+.edit-btn:hover{color:var(--gold);background:rgba(242,201,76,.08)}
+
+/* FAVORITE TEAMS */
+.fav-teams-row{display:flex;gap:10px}
+.fav-team-badge{flex:1;background:var(--surface);border-radius:12px;padding:12px 8px;display:flex;flex-direction:column;align-items:center;gap:7px;border:1px solid #252525;cursor:pointer;transition:transform .15s,border-color .15s}
+.fav-team-badge:hover{border-color:#333}
+.fav-team-badge:active{transform:scale(.95)}
+.ftb-circle{width:38px;height:38px;border-radius:50%;overflow:hidden;position:relative;flex-shrink:0;border:2px solid rgba(255,255,255,.08)}
+.ftb-half1{position:absolute;inset:0;right:50%}
+.ftb-half2{position:absolute;inset:0;left:50%}
+.ftb-name{font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:.5px;text-align:center;line-height:1}
+.ftb-sport{font-size:9px;color:var(--muted);text-align:center;margin-top:-2px}
+
+/* HORIZONTAL SCROLL CARD ROWS */
+.hscroll-row{display:flex;gap:10px;overflow-x:auto;padding-bottom:2px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.hscroll-row::-webkit-scrollbar{display:none}
+.hcard-wrap{position:relative;flex-shrink:0;width:82px}
+.hcard-wrap .card{height:123px;width:82px;cursor:default}
+.hcard-wrap .card:hover{transform:none}
+.hcard-wrap .card-ovr{font-size:14px}
+.hcard-wrap .card-name{font-size:9px}
+.hcard-wrap .card-sub{font-size:7px;margin:1px 0 2px}
+.hcard-wrap .sc-v{font-size:8px}
+.hcard-wrap .sc-k{font-size:5px}
+.hcard-wrap .card-img{min-height:30px}
+.hcard-wrap .stat-overlay{display:none}
+.hcard-badge{position:absolute;top:-7px;left:50%;transform:translateX(-50%);font-size:7px;font-weight:700;padding:2px 7px;border-radius:7px;white-space:nowrap;z-index:10;letter-spacing:.5px}
+.hcard-badge.trade{background:#E97316;color:#fff}
+.hcard-badge.want{background:var(--gold);color:#000}
+.want-card{width:82px;height:123px;border-radius:10px;background:var(--surface2);border:1px solid #252525;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;flex-shrink:0}
+.want-card .wc-lock{font-size:18px;opacity:.3}
+.want-card .wc-label{font-size:8px;color:var(--muted);text-align:center;padding:0 6px;line-height:1.3}
+
+/* PREMIUM PROFILE BUTTONS */
+.btn-p{background:linear-gradient(120deg,#c49400,#F2C94C 50%,#c49400);background-size:200% auto;color:#000;border:none;border-radius:10px;padding:15px 20px;font-family:'Bebas Neue',cursive;font-size:17px;letter-spacing:1.5px;cursor:pointer;width:100%;transition:background-position .45s,box-shadow .2s,transform .1s;display:flex;align-items:center;justify-content:center;gap:10px}
+.btn-p:hover{background-position:right center;box-shadow:0 0 24px rgba(242,201,76,.4)}
+.btn-p:active{transform:scale(.97)}
+.btn-o{background:linear-gradient(120deg,rgba(242,201,76,.07),rgba(242,201,76,.03));color:var(--gold);border:1.5px solid rgba(242,201,76,.5);border-radius:10px;padding:14px 20px;font-family:'Bebas Neue',cursive;font-size:17px;letter-spacing:1.5px;cursor:pointer;width:100%;transition:background .2s,box-shadow .2s,transform .1s;display:flex;align-items:center;justify-content:center;gap:10px}
+.btn-o:hover{background:rgba(242,201,76,.11);box-shadow:0 0 18px rgba(242,201,76,.22)}
+.btn-o:active{transform:scale(.97)}
+.btn-icon{font-size:18px;line-height:1;flex-shrink:0}
+
+/* CTA PACK CARD */
+.cta-pack-card{background:linear-gradient(135deg,#1a1400,#0d0d0d);border:1.5px solid rgba(242,201,76,.4);border-radius:14px;padding:16px;cursor:pointer;display:flex;align-items:center;gap:14px;animation:goldPulse 2.5s ease-in-out infinite;transition:transform .15s;-webkit-tap-highlight-color:transparent}
+.cta-pack-card:active{transform:scale(.97)}
+.cta-left{flex:1;display:flex;flex-direction:column;gap:4px}
+.cta-you-have{font-size:9px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted)}
+.cta-coins-row{display:flex;align-items:center;gap:5px;font-family:'Bebas Neue',cursive;font-size:20px;color:var(--gold);line-height:1}
+.cta-open-label{font-family:'Bebas Neue',cursive;font-size:32px;letter-spacing:1.5px;color:var(--text);line-height:1;margin-top:2px}
+.cta-subtitle{font-size:11px;color:var(--muted);margin-top:2px;font-style:italic}
+.cta-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.cta-pack-mini{width:56px;height:76px;border-radius:8px;background:linear-gradient(160deg,#3a2800,#5a3e00);border:1.5px solid rgba(242,201,76,.45);box-shadow:0 0 20px rgba(242,201,76,.3);animation:goldPulse 2.5s ease-in-out infinite;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;position:relative;overflow:hidden}
+.cta-pack-mini::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 5px,rgba(255,255,255,.03) 5px,rgba(255,255,255,.03) 6px)}
+.cta-pack-mini-text{font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:2px;color:rgba(242,201,76,.85);position:relative;z-index:1}
+.cta-pack-mini-sub{font-family:'Bebas Neue',cursive;font-size:7px;letter-spacing:2px;color:rgba(242,201,76,.5);position:relative;z-index:1}
+.cta-chev{font-size:26px;color:var(--gold);line-height:1;font-weight:300}
+.cta-albums-link{background:none;border:none;color:var(--muted);font-size:13px;font-weight:500;cursor:pointer;padding:8px 4px;text-align:center;width:100%;transition:color .15s;letter-spacing:.2px;font-family:'DM Sans',sans-serif}
+.cta-albums-link:hover{color:var(--gold)}
+
+/* AVATAR PICKER */
+.avatar{cursor:pointer;transition:transform .15s,box-shadow .2s}
+.avatar:hover{transform:scale(1.08)}
+#avatar-picker{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:500;align-items:flex-end;justify-content:center;max-width:430px;left:50%;transform:translateX(-50%)}
+#avatar-picker.on{display:flex}
+.ap-sheet{background:var(--surface);border-radius:22px 22px 0 0;padding:20px 16px 40px;width:100%;animation:slideUp .3s ease both}
+.ap-title{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:1px;margin-bottom:16px;text-align:center}
+.ap-section-lbl{font-size:10px;font-weight:600;color:var(--muted);letter-spacing:.8px;text-transform:uppercase;margin-bottom:10px}
+.ap-colors{display:flex;gap:11px;flex-wrap:wrap;margin-bottom:18px}
+.ap-color{width:44px;height:44px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:transform .15s,border-color .15s;flex-shrink:0}
+.ap-color:hover{transform:scale(1.12)}
+.ap-color.sel{border-color:var(--gold)!important;box-shadow:0 0 12px rgba(242,201,76,.5)}
+.ap-emojis{display:flex;gap:10px;flex-wrap:wrap}
+.ap-emoji{width:54px;height:54px;border-radius:13px;background:var(--surface2);border:2px solid transparent;display:flex;align-items:center;justify-content:center;font-size:26px;cursor:pointer;transition:transform .15s,border-color .15s}
+.ap-emoji:hover{transform:scale(1.1)}
+.ap-emoji.sel{border-color:var(--gold);box-shadow:0 0 10px rgba(242,201,76,.4)}
+.ap-close-btn{display:block;width:100%;margin-top:18px;background:none;border:1px solid #2a2a2a;border-radius:10px;padding:13px;font-family:'Bebas Neue',cursive;font-size:15px;letter-spacing:1px;color:var(--muted);cursor:pointer;transition:border-color .15s}
+.ap-close-btn:hover{border-color:#444}
+
+/* ANIMATIONS */
+@keyframes screenFade{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+@keyframes goldPulse{0%,100%{box-shadow:0 0 20px rgba(242,201,76,.38)}50%{box-shadow:0 0 32px rgba(242,201,76,.65)}}
+@keyframes legendaryPulse{
+  0%,100%{box-shadow:0 0 20px rgba(242,201,76,.45),0 0 45px rgba(242,201,76,.2),0 0 80px rgba(242,201,76,.08)}
+  50%{box-shadow:0 0 38px rgba(242,201,76,.75),0 0 75px rgba(242,201,76,.4),0 0 120px rgba(242,201,76,.18)}
+}
+@keyframes holo{0%{background-position:0% 50%}100%{background-position:300% 50%}}
+@keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes progFill{from{width:0}}
+@keyframes tapPulse{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.04)}}
+@keyframes glowGold{0%,100%{box-shadow:0 0 16px rgba(242,201,76,.2),0 4px 16px rgba(0,0,0,.5)}50%{box-shadow:0 0 30px rgba(242,201,76,.5),0 4px 16px rgba(0,0,0,.5)}}
+@keyframes glowBlue{0%,100%{box-shadow:0 0 16px rgba(59,130,246,.2),0 4px 16px rgba(0,0,0,.5)}50%{box-shadow:0 0 30px rgba(59,130,246,.5),0 4px 16px rgba(0,0,0,.5)}}
+@keyframes glowGreen{0%,100%{box-shadow:0 0 16px rgba(22,163,74,.2),0 4px 16px rgba(0,0,0,.5)}50%{box-shadow:0 0 30px rgba(22,163,74,.5),0 4px 16px rgba(0,0,0,.5)}}
+
+/* ── CINEMATIC OVERHAUL CSS ─────────────────────────── */
+@keyframes packFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+@keyframes heartbeat {
+  0%,100%{transform:scale(1);opacity:.55}
+  8%{transform:scale(1.12);opacity:1}
+  16%{transform:scale(1);opacity:.55}
+  24%{transform:scale(1.07);opacity:.9}
+  32%,90%{transform:scale(1);opacity:.55}
+}
+.po-tap-hint { animation:heartbeat 1.8s ease-in-out infinite!important; font-size:20px!important; letter-spacing:4px!important; color:var(--gold)!important }
+#pack-overlay::before {
+  content:''; position:absolute; inset:0; pointer-events:none; z-index:0;
+  background:repeating-linear-gradient(-55deg, transparent, transparent 40px, rgba(255,255,255,.012) 40px, rgba(255,255,255,.012) 41px);
+  animation:raysDrift 12s linear infinite;
+}
+@keyframes raysDrift { from{background-position:0 0} to{background-position:100px 0} }
+body::before {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:-1;
+  background:radial-gradient(ellipse at 30% 40%, rgba(242,201,76,.025) 0%,transparent 55%),
+             radial-gradient(ellipse at 75% 65%, rgba(59,130,246,.02) 0%,transparent 55%);
+  animation:bgDrift 10s ease-in-out infinite alternate;
+}
+@keyframes bgDrift { from{transform:translate(0,0)} to{transform:translate(25px,-20px)} }
+.fx-flash3{position:absolute;inset:0;background:#fff;pointer-events:none;animation:fxFlash3 .08s ease both}
+@keyframes fxFlash3{0%,100%{opacity:0}30%{opacity:.9}60%{opacity:0}}
+.fx-shockwave{position:absolute;top:50%;left:50%;width:20px;height:20px;margin:-10px;
+  border-radius:50%;border:3px solid rgba(255,255,255,.8);pointer-events:none;
+  animation:shockwaveExpand .65s ease-out both}
+@keyframes shockwaveExpand{from{transform:scale(0);opacity:1}to{transform:scale(20);opacity:0}}
+.fx-shard{position:absolute;width:12px;height:5px;border-radius:2px;top:50%;left:50%;
+  pointer-events:none;animation:shardFly .55s ease-out both}
+@keyframes shardFly{
+  from{transform:translate(-50%,-50%) rotate(var(--a)) translateX(0);opacity:1}
+  to{transform:translate(-50%,-50%) rotate(var(--a)) translateX(var(--r));opacity:0}
+}
+.fx-elec-bg{position:absolute;inset:0;background:rgba(59,130,246,.15);animation:fxFlash .5s ease both;pointer-events:none}
+.fx-bolt{position:absolute;left:0;right:0;height:2px;top:var(--y);
+  background:linear-gradient(90deg,transparent 0%,rgba(59,130,246,.9) 30%,rgba(147,210,255,1) 50%,rgba(59,130,246,.9) 70%,transparent 100%);
+  animation:boltStrike .4s var(--d) ease both;pointer-events:none}
+@keyframes boltStrike{
+  0%{opacity:0;transform:scaleX(0) translateX(-50%)}
+  30%{opacity:1;transform:scaleX(1) translateX(0)}
+  70%{opacity:.8}100%{opacity:0}
+}
+.fx-epic-dark{position:absolute;inset:0;background:rgba(0,0,0,.75);animation:fxDark .25s ease both;pointer-events:none}
+@keyframes fxDark{from{opacity:0}to{opacity:1}}
+.fx-ember{position:absolute;width:4px;height:4px;border-radius:50%;bottom:0;pointer-events:none;
+  animation:emberRise var(--dur) var(--del) ease-out both}
+@keyframes emberRise{
+  0%{transform:translateX(var(--x)) translateY(0);opacity:1}
+  100%{transform:translateX(calc(var(--x) + var(--drift))) translateY(-90vh);opacity:0}
+}
+.fx-lightning-strike{position:absolute;left:50%;top:0;width:3px;height:0;margin-left:-1.5px;
+  background:linear-gradient(180deg,rgba(255,255,255,1),rgba(242,201,76,.6),rgba(255,100,0,.4),transparent);
+  animation:strikeDrop .35s .2s ease-out both;pointer-events:none}
+@keyframes strikeDrop{from{height:0;opacity:1}50%{height:60vh;opacity:1}to{height:70vh;opacity:0}}
+.fx-instant-black{position:absolute;inset:0;background:#000;pointer-events:none}
+.fx-gold-beam{position:absolute;top:0;left:50%;width:80px;margin-left:-40px;height:100%;
+  background:linear-gradient(180deg,rgba(242,201,76,.95) 0%,rgba(242,201,76,.4) 15%,rgba(242,201,76,.1) 40%,transparent 70%);
+  pointer-events:none;animation:beamIn .4s ease both}
+@keyframes beamIn{from{opacity:0;transform:scaleX(.1)}to{opacity:1;transform:scaleX(1)}}
+.fx-leg-text{position:absolute;top:38%;left:50%;transform:translateX(-50%);
+  font-family:'Bebas Neue',cursive;font-size:52px;letter-spacing:8px;color:var(--gold);
+  text-shadow:0 0 30px rgba(242,201,76,.9),0 0 60px rgba(242,201,76,.5);
+  white-space:nowrap;pointer-events:none;z-index:30}
+.card-locked{overflow:hidden;position:relative}
+.card-locked::after{
+  content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.07),transparent);
+  animation:shimmerSweep 2.8s ease-in-out infinite
+}
+@keyframes shimmerSweep{0%{left:-100%}100%{left:220%}}
+.player-initials{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',cursive;font-size:26px;color:rgba(255,255,255,.22);z-index:2;pointer-events:none}
+.grid3 .player-initials{font-size:18px}
+@keyframes coinFlash{0%,100%{color:inherit;text-shadow:none}40%{color:#F2C94C;text-shadow:0 0 14px rgba(242,201,76,.8)}}
+.coin-flash{animation:coinFlash .55s ease both}
+.card-leg-float{animation:legFloat 1.6s ease-in-out 3!important;box-shadow:0 0 44px rgba(242,201,76,.95)!important}
+
+/* BURST PARTICLES */
+.fx-burst-particle{position:absolute;border-radius:50%;top:50%;left:50%;pointer-events:none;animation:burstFly var(--dur,.7s) ease-out both}
+@keyframes burstFly{
+  0%{transform:translate(-50%,-50%) rotate(var(--a)) translateX(0) scale(1);opacity:1}
+  100%{transform:translate(-50%,-50%) rotate(var(--a)) translateX(var(--d)) scale(0);opacity:0}
+}
+
+/* PURPLE EPIC FX */
+.fx-bolt-purple{background:linear-gradient(90deg,transparent 0%,rgba(192,132,252,.9) 30%,rgba(216,180,254,1) 50%,rgba(192,132,252,.9) 70%,transparent 100%)!important}
+.fx-epic-purple-flash{position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(192,132,252,.55) 0%,rgba(139,92,246,.3) 40%,transparent 70%);pointer-events:none;animation:fxFlash .35s ease both}
+.fx-lightning-strike-purple{background:linear-gradient(180deg,rgba(255,255,255,1),rgba(192,132,252,.8),rgba(139,92,246,.5),transparent)!important}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ══ PROFILE ══ -->
+<div id="screen-profile" class="screen active">
+  <div class="profile-top">
+    <div class="avatar" id="avatar-el" onclick="openAvatarPicker()" style="background:#1a1a1a;padding:0;overflow:hidden"><img src="https://snworksceo.imgix.net/dpn/af04c16a-0586-455a-9ba6-f8a661ecbaa8.sized-1000x1000.jpg" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.parentNode.textContent='JS'"></div>
+    <div class="profile-name">Jack Settleman</div>
+    <div class="era-badge"><div class="era-bitmoji" style="display:flex;align-items:center;justify-content:center;background:#0f1923;font-size:16px;line-height:1">🧢</div>REAL_SPORTS ERA</div>
+    <div class="coin-row"><svg width="26" height="26" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="10" fill="#F2C94C" stroke="#C49400" stroke-width="1.5"/><circle cx="11" cy="11" r="7" fill="none" stroke="#C49400" stroke-width="1"/><text x="11" y="15" text-anchor="middle" font-size="9" font-weight="900" fill="#8B6800" font-family="Arial">SC</text></svg> <span id="coin-disp">1,240</span> Coins</div>
+  </div>
+  <div class="p-card">
+    <div class="prog-label"><span>Collection Progress</span><span>45 / 63</span></div>
+    <div class="prog-bar"><div class="prog-fill" style="width:71.43%"></div></div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-box"><span class="sv">38</span><span class="sk">Trivia Days</span></div>
+    <div class="stat-box"><span class="sv">124</span><span class="sk">Videos Watched</span></div>
+    <div class="stat-box"><span class="sv">7</span><span class="sk">Trades</span></div>
+  </div>
+  <div class="btn-row" style="gap:8px">
+    <div class="cta-pack-card" onclick="go('packs')">
+      <div class="cta-left">
+        <div class="cta-you-have">YOU HAVE</div>
+        <div class="cta-coins-row">
+          <svg width="18" height="18" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="10" fill="#F2C94C" stroke="#C49400" stroke-width="1.5"/><circle cx="11" cy="11" r="7" fill="none" stroke="#C49400" stroke-width="1"/><text x="11" y="15" text-anchor="middle" font-size="9" font-weight="900" fill="#8B6800" font-family="Arial">SC</text></svg>
+          <span id="cta-coin-disp">1,240</span> Coins
+        </div>
+        <div class="cta-open-label">OPEN A PACK</div>
+        <div class="cta-subtitle">A Legendary is waiting.</div>
+      </div>
+      <div class="cta-right">
+        <div class="cta-pack-mini">
+          <div class="cta-pack-mini-text">SB</div>
+          <div class="cta-pack-mini-sub">PACK</div>
+        </div>
+        <span class="cta-chev">›</span>
+      </div>
+    </div>
+    <button class="cta-albums-link" onclick="go('albums-hub')">View My Albums →</button>
+  </div>
+
+  <!-- Favorite Teams -->
+  <div class="p-section">
+    <div class="p-section-header">
+      <span class="p-section-title">Favorite Teams</span>
+      <button class="edit-btn">Edit</button>
+    </div>
+    <div class="fav-teams-row" id="fav-teams-row"></div>
+  </div>
+
+  <!-- Trade Block -->
+  <div class="p-section">
+    <div class="p-section-header">
+      <span class="p-section-title">Trade Block</span>
+      <button class="edit-btn">Manage</button>
+    </div>
+    <div class="hscroll-row" id="trading-row"></div>
+  </div>
+
+  <!-- Cards I Want -->
+  <div class="p-section">
+    <div class="p-section-header">
+      <span class="p-section-title">Cards I Want</span>
+      <button class="edit-btn">Add</button>
+    </div>
+    <div class="hscroll-row" id="want-row"></div>
+  </div>
+</div>
+
+<!-- ══ ALBUMS HUB ══ -->
+<div id="screen-albums-hub" class="screen">
+  <div class="hub-header">
+    <div class="hub-title">My Collections</div>
+    <div class="hub-sub">45 of 63 cards collected</div>
+  </div>
+  <div class="hub-grid">
+    <div class="col-tile gold" onclick="go('snapback')">
+      <div class="ct-emoji"><img src="https://i.imgur.com/iEINPhe.jpeg" style="width:40px;height:36px;object-fit:cover;border-radius:4px;"></div>
+      <div class="ct-name">Snapback Experiences</div>
+      <div class="ct-sub">Live events</div>
+      <div class="ct-prog">6 / 12 cards</div>
+    </div>
+    <div class="col-tile blue" onclick="go('nfl-select')">
+      <div class="ct-emoji" style="font-size:36px;line-height:1">🏈</div>
+      <div class="ct-name">NFL 2026</div>
+      <div class="ct-sub">6 teams</div>
+      <div class="ct-prog">24 / 30 cards</div>
+    </div>
+    <div class="col-tile green" onclick="go('wc-select')">
+      <div class="ct-emoji" style="font-size:36px;line-height:1">⚽</div>
+      <div class="ct-name">World Cup 2026</div>
+      <div class="ct-sub">7 nations</div>
+      <div class="ct-prog">15 / 21 cards</div>
+    </div>
+    <div class="col-tile locked">
+      <div class="ct-emoji"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+      <div class="ct-name">More Coming Soon</div>
+      <div class="ct-sub">NBA · MLB · College</div>
+      <div class="ct-prog" style="color:var(--muted)">2026 Season</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SNAPBACK EXPERIENCES ══ -->
+<div id="screen-snapback" class="screen">
+  <div class="sh">
+    <button class="back-btn" onclick="go('albums-hub')">← Back</button>
+    <div class="sh-title">Snapback Experiences</div>
+    <div class="sh-badge">6/12</div>
+  </div>
+  <div style="padding:14px 16px">
+    <div class="grid3" id="snapback-grid"></div>
+  </div>
+</div>
+
+<!-- ══ NFL TEAM SELECT ══ -->
+<div id="screen-nfl-select" class="screen">
+  <div class="sh">
+    <button class="back-btn" onclick="go('albums-hub')">← Back</button>
+    <div class="sh-title">NFL 2026</div>
+    <div class="sh-badge">6 Teams</div>
+  </div>
+  <div class="team-list" id="nfl-team-list"></div>
+</div>
+
+<!-- ══ NFL TEAM DETAIL ══ -->
+<div id="screen-nfl-team" class="screen">
+  <div class="sh" id="nfl-team-sh">
+    <button class="back-btn" onclick="go('nfl-select')">← Back</button>
+    <div class="sh-title" id="nfl-team-title">Team</div>
+    <div class="sh-badge" id="nfl-team-badge"></div>
+  </div>
+  <div id="nfl-team-content"></div>
+</div>
+
+<!-- ══ WORLD CUP SELECT ══ -->
+<div id="screen-wc-select" class="screen">
+  <div class="sh wc-sh">
+    <button class="back-btn" style="color:#4ade80" onclick="go('albums-hub')">← Back</button>
+    <div class="sh-title">World Cup 2026</div>
+    <div class="sh-badge">7 Nations</div>
+  </div>
+  <div class="team-list" id="wc-country-list"></div>
+</div>
+
+<!-- ══ WORLD CUP COUNTRY DETAIL ══ -->
+<div id="screen-wc-country" class="screen">
+  <div class="sh wc-sh" id="wc-country-sh">
+    <button class="back-btn" style="color:#4ade80" onclick="go('wc-select')">← Back</button>
+    <div class="sh-title" id="wc-country-title">Country</div>
+    <div class="sh-badge" id="wc-country-badge"></div>
+  </div>
+  <div id="wc-country-content"></div>
+</div>
+
+<!-- ══ PACK SCREEN ══ -->
+<div id="screen-packs" class="screen">
+  <div class="pack-screen-header">
+    <div class="pack-screen-title">Open a Pack</div>
+    <div class="pack-screen-sub">Select your pack below</div>
+  </div>
+  <div class="pack-3d-list" id="pack-list"></div>
+  <div class="pack-balance-row">
+    <span>Balance</span>
+    <span class="pack-balance-val"><svg width="16" height="16" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;margin-right:3px"><circle cx="11" cy="11" r="10" fill="#F2C94C" stroke="#C49400" stroke-width="1.5"/><circle cx="11" cy="11" r="7" fill="none" stroke="#C49400" stroke-width="1"/><text x="11" y="15" text-anchor="middle" font-size="9" font-weight="900" fill="#8B6800" font-family="Arial">SC</text></svg><span id="packs-coin-disp">1,240</span></span>
+  </div>
+  <div class="pack-open-wrap">
+    <button class="btn-p" id="open-btn" onclick="startOpen()">Open Pack — 150 Coins</button>
+  </div>
+</div>
+
+</div><!-- #app -->
+
+<!-- AVATAR PICKER -->
+<div id="avatar-picker" onclick="closeAvatarPicker()">
+  <div class="ap-sheet" onclick="event.stopPropagation()">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+      <span style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:.5px">Choose Avatar</span>
+      <button onclick="closeAvatarPicker()" style="background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;padding:4px 8px;line-height:1">✕</button>
+    </div>
+    <div class="ap-section-lbl">Color</div>
+    <div style="display:flex;gap:10px;margin-bottom:18px">
+      <div class="ap-color" style="background:#241773" onclick="pickAvatarColor('#241773','#F2C94C',this)"></div>
+      <div class="ap-color" style="background:#0021A5" onclick="pickAvatarColor('#0021A5','#FA4616',this)"></div>
+      <div class="ap-color" style="background:#B22234" onclick="pickAvatarColor('#B22234','#fff',this)"></div>
+      <div class="ap-color sel" style="background:#F2C94C" onclick="pickAvatarColor('#F2C94C','#000',this)"></div>
+      <div class="ap-color" style="background:#16A34A" onclick="pickAvatarColor('#16A34A','#fff',this)"></div>
+      <div class="ap-color" style="background:#1E1E1E;border:1px solid #444" onclick="pickAvatarColor('#1E1E1E','#F2C94C',this)"></div>
+    </div>
+    <div class="ap-section-lbl">Emoji</div>
+    <div style="display:flex;gap:10px">
+      <div class="ap-emoji" onclick="pickAvatarEmoji('🏈',this)">🏈</div>
+      <div class="ap-emoji" onclick="pickAvatarEmoji('⚽',this)">⚽</div>
+      <div class="ap-emoji" onclick="pickAvatarEmoji('🏀',this)">🏀</div>
+      <div class="ap-emoji" onclick="pickAvatarEmoji('⚾',this)">⚾</div>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-item active" id="nav-profile" onclick="go('profile')">
+    <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span><span>Profile</span>
+  </div>
+  <div class="nav-item" id="nav-albums" onclick="go('albums-hub')">
+    <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><span>Albums</span>
+  </div>
+  <div class="nav-item" id="nav-packs" onclick="go('packs')">
+    <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg></span><span>Open Pack</span>
+  </div>
+</nav>
+
+<!-- EXTERNAL LIBS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tsparticles@3.3.0/tsparticles.bundle.min.js"></script>
+
+<!-- CINEMATIC PACK OVERLAY -->
+<div id="pack-overlay">
+  <div id="po-fx"></div>
+  <button class="ov-close" id="ov-close" onclick="closeOverlay()">✕</button>
+  <div id="ov-body" style="display:flex;flex-direction:column;align-items:center;width:100%;flex:1;position:relative"></div>
+</div>
+
+<script>
+const COIN_SVG = (size=18)=>`<svg width="${size}" height="${size}" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="10" fill="#F2C94C" stroke="#C49400" stroke-width="1.5"/><circle cx="11" cy="11" r="7" fill="none" stroke="#C49400" stroke-width="1"/><text x="11" y="15" text-anchor="middle" font-size="9" font-weight="900" fill="#8B6800" font-family="Arial">SC</text></svg>`;
+
+function handleImgErr(img){
+  img.style.display='none';
+  if(img.parentElement && !img.parentElement.querySelector('.player-initials')){
+    const d = document.createElement('div');
+    d.className = 'player-initials';
+    d.textContent = (img.alt||'').split(' ').map(w=>w[0]||'').join('').slice(0,2).toUpperCase();
+    img.parentElement.appendChild(d);
+  }
+}
+// ═══════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════
+
+const ESPN = 'https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/';
+const FOTMOB = 'https://images.fotmob.com/image_resources/playerimages/';
+
+const snapbackCards = [
+  {id:'psg-ucl',    name:'PSG Champions League', sub:'Paris, France · UCL',       ovr:9.15, r:'legendary', thumb:'2kYbBDK-Mw8', stats:{FANS:98,FOOD:92,UNIQ:99,STAD:95}},
+  {id:'nfl-munich', name:'NFL Munich Game',       sub:'Munich, Germany · NFL',    ovr:8.92, r:'epic',      thumb:'UmxxIcU8l0o', stats:{FANS:94,FOOD:88,UNIQ:97,STAD:89}},
+  {id:'natty-2026', name:'National Championship', sub:'Miami, FL · NCAAF',        ovr:8.88, r:'epic',      thumb:'8fUjBOZDHx8', stats:{FANS:95,FOOD:85,UNIQ:91,STAD:90}},
+  {id:'ky-derby',   name:'Kentucky Derby',        sub:'Louisville, KY',            ovr:8.86, r:'epic',      thumb:'awIQBqlZfko', stats:{FANS:92,FOOD:90,UNIQ:94,STAD:87}},
+  {id:'maction',    name:'MACtion Bowling Green', sub:'Bowling Green, OH · NCAAF', ovr:6.40, r:'rare',      thumb:'6O_apqils7k', stats:{FANS:62,FOOD:58,UNIQ:75,STAD:55}},
+  {id:'army-navy',  name:'Army vs Navy',          sub:'Washington, D.C. · NCAAF',  ovr:5.90, r:'common',   thumb:'-IVrCMmKujk', stats:{FANS:70,FOOD:55,UNIQ:68,STAD:52}},
+  {locked:true,label:'Wrexham AFC',r:'rare',thumb:'dA_vS1Xa-l8'},
+  {id:'wrigley',    name:'Wrigley Field',        sub:'Chicago, IL · MLB',           ovr:6.80, r:'rare',      thumb:'YHo_EM-0_MI', stats:{FANS:75,FOOD:78,UNIQ:85,STAD:82}},
+  {locked:true,label:'Super Bowl LX',r:'epic',thumb:'xhULAubdRBo'},
+  {locked:true,label:'El Clásico',r:'epic',thumb:'RuAHJFjT9cg'},
+  {id:'the-swamp',  name:'The Swamp',             sub:'Gainesville, FL · NCAAF',    ovr:6.60, r:'rare',      tiktokThumb:'https://p16-common-sign.tiktokcdn-us.com/tos-useast8-p-0068-tx2/okqCwJTAfuXG78h1FxYjAHeZIzILC6IRAQ4gNe~tplv-tiktokx-origin.image?dr=9636&x-expires=1774022400&x-signature=qYHMsAOCEzqw5YfVo3Jkt6GtSmU%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=useast8', stats:{FANS:80,FOOD:60,UNIQ:70,STAD:72}},
+  {locked:true,label:'Olympics 2028',r:'legendary',thumb:'pDKQ_l8QQTM'},
+];
+
+const nflTeams = [
+  {id:'ravens', name:'Baltimore Ravens', sub:'The Flock', logoUrl:'https://a.espncdn.com/i/teamlogos/nfl/500/bal.png', ovr:9.4, r:'legendary', featured:true, prog:'5/5',
+    cards:[
+      {id:'rv-team', name:'Baltimore Ravens', sub:'The Flock · Team',  ovr:9.4, r:'legendary', cls:'card-ravens-team', logoUrl:'https://a.espncdn.com/i/teamlogos/nfl/500/bal.png', stats:{ATK:96,DEF:93,STM:91,IQ:97}},
+      {id:'lamar',   name:'Baby GOAT',        sub:'Lamar Jackson · QB', ovr:9.8, r:'legendary', cls:'card-ravens-lj',   espnId:3916387, stats:{SPD:99,ARM:98,IQ:97,XF:99}},
+      {id:'henry',   name:'Derrick Henry',    sub:'RB',                 ovr:9.1, r:'epic',      espnId:3043078, stats:{SPD:94,PWR:99,IQ:88,XF:91}},
+      {id:'roquan',  name:'Roquan Smith',     sub:'LB',                 ovr:8.6, r:'rare',      espnId:3915189, stats:{SPD:88,TKL:96,IQ:92,PWR:90}},
+      {id:'zay',     name:'Zay Flowers',      sub:'WR · Baltimore Ravens', ovr:8.4, r:'rare', espnId:4429615, stats:{SPD:95,RTE:88,HND:85,IQ:82}},
+    ]},
+  {id:'chiefs', name:'Kansas City Chiefs', sub:'The Dynasty', logoUrl:'https://a.espncdn.com/i/teamlogos/nfl/500/kc.png', ovr:9.2, r:'epic', prog:'2/5',
+    cards:[
+      {id:'mahomes', name:'Patrick Mahomes', sub:'QB', ovr:9.6, r:'epic', espnId:3139477, stats:{SPD:88,ARM:99,IQ:98,XF:96}},
+      {id:'kelce',   name:'Travis Kelce',   sub:'TE', ovr:9.2, r:'epic', espnId:15847,   stats:{SPD:82,RTE:95,HND:97,IQ:94}},
+      {locked:true,label:'Xavier Worthy',r:'rare'},{locked:true,label:'Creed Humphrey',r:'rare'},{locked:true,label:'Chris Jones',r:'epic'},
+    ]},
+  {id:'cowboys', name:'Dallas Cowboys', sub:"America's Team", logoUrl:'https://a.espncdn.com/i/teamlogos/nfl/500/dal.png', ovr:8.7, r:'rare', prog:'2/5',
+    cards:[
+      {id:'lamb', name:'CeeDee Lamb',   sub:'WR', ovr:9.0, r:'epic', espnId:4241389, stats:{SPD:96,RTE:97,HND:96,IQ:91}},
+      {id:'dak',  name:'Dak Prescott', sub:'QB', ovr:8.5, r:'rare', espnId:2577417, stats:{SPD:82,ARM:88,IQ:90,XF:85}},
+      {locked:true,label:'Rico Dowdle',r:'rare'},{locked:true,label:'Micah Parsons',r:'epic'},{locked:true,label:'Brian Schottenheimer',r:'common'},
+    ]},
+  {id:'eagles', name:'Philadelphia Eagles', sub:'Fly Eagles Fly', logoUrl:'https://a.espncdn.com/i/teamlogos/nfl/500/phi.png', ovr:9.3, r:'epic', prog:'0/5',
+    cards:[
+      {id:'hurts',   name:'Jalen Hurts',          sub:'QB', ovr:9.2, r:'epic',      espnId:4040715, stats:{SPD:90,ARM:92,IQ:95,XF:96}},
+      {id:'barkley', name:'Saquon Barkley',        sub:'RB', ovr:9.5, r:'legendary', espnId:3929630, stats:{SPD:97,PWR:95,IQ:90,XF:98}},
+      {id:'ajbrown', name:'A.J. Brown',            sub:'WR', ovr:9.0, r:'epic',      espnId:4047646, stats:{SPD:89,RTE:94,HND:96,IQ:92}},
+      {id:'devonta', name:'DeVonta Smith',          sub:'WR', ovr:8.7, r:'rare',      espnId:4241478, stats:{SPD:94,RTE:92,HND:88,IQ:87}},
+      {id:'jcarter', name:'Jalen Carter',           sub:'DT', ovr:9.1, r:'epic',      espnId:4685759, stats:{SPD:82,PWR:97,IQ:88,TKL:95}},
+    ]},
+  {id:'bills', name:'Buffalo Bills', sub:'Mafia Season', logoUrl:'https://a.espncdn.com/i/teamlogos/nfl/500/buf.png', ovr:9.1, r:'epic', prog:'0/5',
+    cards:[
+      {id:'jallen',   name:'Josh Allen',     sub:'QB', ovr:9.7, r:'legendary', espnId:3918298, stats:{SPD:92,ARM:99,IQ:96,XF:98}},
+      {id:'jcook',    name:'James Cook',     sub:'RB', ovr:8.6, r:'rare',      espnId:4379399, stats:{SPD:96,PWR:82,IQ:85,XF:88}},
+      {id:'kcoleman', name:'Keon Coleman',   sub:'WR', ovr:8.4, r:'rare',      espnId:4635008, stats:{SPD:91,RTE:86,HND:88,IQ:82}},
+      {id:'shakir',   name:'Khalil Shakir',  sub:'WR', ovr:8.2, r:'rare',      espnId:4373678, stats:{SPD:92,RTE:88,HND:85,IQ:84}},
+      {id:'dkincaid', name:'Dalton Kincaid', sub:'TE', ovr:8.3, r:'rare',      espnId:4385690, stats:{SPD:82,RTE:88,HND:90,IQ:86}},
+    ]},
+  {id:'niners', name:'San Francisco 49ers', sub:'The Gold Rush', logoUrl:'https://a.espncdn.com/i/teamlogos/nfl/500/sf.png', ovr:9.0, r:'epic', prog:'0/5',
+    cards:[
+      {id:'purdy',    name:'Brock Purdy',           sub:'QB', ovr:9.0, r:'epic',      espnId:4361741, stats:{SPD:78,ARM:92,IQ:96,XF:91}},
+      {id:'cmac',     name:'Christian McCaffrey',   sub:'RB', ovr:9.6, r:'legendary', espnId:3117251, stats:{SPD:95,PWR:88,IQ:97,XF:99}},
+      {id:'aiyuk',    name:'Brandon Aiyuk',         sub:'WR', ovr:8.8, r:'epic',      espnId:4360438, stats:{SPD:93,RTE:91,HND:90,IQ:88}},
+      {id:'deebo',    name:'Deebo Samuel',          sub:'WR', ovr:8.6, r:'rare',      espnId:3126486, stats:{SPD:92,RTE:87,HND:88,IQ:86}},
+      {id:'jennings', name:'Jauan Jennings',        sub:'WR', ovr:8.2, r:'rare',      espnId:3886598, stats:{SPD:84,RTE:86,HND:91,IQ:85}},
+    ]},
+];
+
+const WC_LOGO = id => `https://a.espncdn.com/i/teamlogos/soccer/500/${id}.png`;
+const wcCountries = [
+  {id:'usa',       name:'United States', sub:'Host Nation',      em:'🇺🇸', ovr:8.5, r:'epic',      prog:'3/3', owned:true,
+    cards:[
+      {id:'pulisic',  name:'Christian Pulisic', sub:'FW · USMNT Captain',  ovr:8.8, r:'legendary', fotmobId:688295,  stats:{PAC:94,SHO:85,PAS:82,PHY:78}},
+      {id:'mckennie', name:'Weston McKennie',   sub:'MF · USMNT',          ovr:8.3, r:'epic',      fotmobId:848266,  stats:{PAC:84,SHO:78,PAS:83,PHY:87}},
+      {id:'greyna',   name:'Gio Reyna',         sub:'MF · USMNT',          ovr:8.0, r:'rare',      fotmobId:1071179, stats:{PAC:88,SHO:80,PAS:86,PHY:72}},
+    ]},
+  {id:'brazil',    name:'Brazil',    sub:'A Seleção',      em:'🇧🇷', ovr:9.3, r:'epic',      prog:'3/3', owned:true,
+    cards:[
+      {id:'vini',    name:'Vinicius Jr', sub:'FW · Real Madrid', ovr:9.5, r:'legendary', fotmobId:846033, stats:{PAC:97,SHO:91,PAS:83,PHY:82}},
+      {id:'rodrygo', name:'Rodrygo',     sub:'FW · Real Madrid', ovr:8.9, r:'epic',      fotmobId:895362, stats:{PAC:93,SHO:87,PAS:84,PHY:75}},
+      {id:'raphinha', name:'Raphinha',   sub:'FW · Barcelona',   ovr:8.7, r:'rare',      fotmobId:696679, stats:{PAC:92,SHO:85,PAS:82,PHY:78}},
+    ]},
+  {id:'france',    name:'France',    sub:'Les Bleus',      em:'🇫🇷', ovr:9.2, r:'epic',      prog:'3/3', owned:true,
+    cards:[
+      {id:'mbappe',      name:'Kylian Mbappé',       sub:'FW · Captain',      ovr:9.7, r:'legendary', fotmobId:701154, stats:{PAC:99,SHO:95,PAS:88,PHY:85}},
+      {id:'griezmann',   name:'Antoine Griezmann',  sub:'FW/MF · Les Bleus', ovr:8.9, r:'epic',      fotmobId:184138, stats:{PAC:85,SHO:91,PAS:87,PHY:82}},
+      {id:'tchouameni',  name:'Aurélien Tchouaméni', sub:'MF · Real Madrid',  ovr:8.6, r:'rare',      fotmobId:914458, stats:{PAC:82,SHO:74,PAS:85,PHY:91}},
+    ]},
+  {id:'argentina', name:'Argentina', sub:'La Albiceleste',  em:'🇦🇷', ovr:9.6, r:'legendary', prog:'3/3', owned:true,
+    cards:[
+      {id:'messi',     name:'Leo Messi',      sub:'FW · Final Chapter',   ovr:9.9, r:'legendary', fotmobId:30981,   stats:{PAC:88,SHO:98,PAS:99,PHY:76}},
+      {id:'jalvarez',  name:'Julián Álvarez', sub:'FW · Atlético Madrid', ovr:8.9, r:'epic',      fotmobId:974753,  stats:{PAC:89,SHO:90,PAS:80,PHY:85}},
+      {id:'efernandez', name:'Enzo Fernández', sub:'MF · Chelsea',        ovr:8.6, r:'rare',      fotmobId:1710240, stats:{PAC:82,SHO:78,PAS:90,PHY:83}},
+    ]},
+  {id:'england',   name:'England',   sub:'Three Lions',    em:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', ovr:8.6, r:'rare',      prog:'3/3', owned:true,
+    cards:[
+      {id:'bellingham', name:'Jude Bellingham', sub:'MF · Real Madrid',   ovr:9.3, r:'legendary', fotmobId:1077894, stats:{PAC:88,SHO:87,PAS:89,PHY:86}},
+      {id:'kane',       name:'Harry Kane',      sub:'FW · Bayern Munich', ovr:9.1, r:'epic',      fotmobId:194165,  stats:{PAC:79,SHO:96,PAS:85,PHY:87}},
+      {id:'saka',       name:'Bukayo Saka',     sub:'FW/MF · Arsenal',   ovr:8.8, r:'rare',       fotmobId:961995,  stats:{PAC:91,SHO:84,PAS:86,PHY:77}},
+    ]},
+  {id:'spain',     name:'Spain',     sub:'La Roja',         em:'🇪🇸', ovr:8.9, r:'epic',      prog:'0/3',
+    cards:[{locked:true,label:'Spain Team'},{locked:true,label:'Spain Star'},{locked:true,label:'Spain Midfielder'}]},
+  {id:'germany',   name:'Germany',   sub:'Die Mannschaft',  em:'🇩🇪', ovr:8.7, r:'rare',      prog:'0/3',
+    cards:[{locked:true,label:'Germany Team'},{locked:true,label:'Germany Star'},{locked:true,label:'Germany Midfielder'}]},
+];
+
+const packDefs = [
+  {id:'snapback', name:'Snapback Pack',  desc:'6 Experience Cards',   cost:150, visCls:'po-snapback-vis', selCls:'pk-snapback', txt:'SB',  sub:'PACK',  color:'rgba(242,201,76,.9)'},
+  {id:'nfl',      name:'NFL Pack',       desc:'5 Player Cards',        cost:100, visCls:'po-nfl-vis',      selCls:'pk-nfl',      txt:'NFL', sub:'2026',  color:'rgba(59,130,246,.9)'},
+  {id:'wc',       name:'World Cup Pack', desc:'5 International Cards', cost:100, visCls:'po-wc-vis',       selCls:'pk-wc',       txt:'WC',  sub:'2026',  color:'rgba(22,163,74,.9)'},
+];
+
+// ═══════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════
+
+const S = {
+  coins: 1240,
+  selectedPack: 'snapback',
+  selectedNFLTeam: null,
+  selectedWCCountry: null,
+  screen: 'profile',
+  snapbackOwned: new Set(['psg-ucl','nfl-munich','natty-2026','ky-derby','maction','army-navy']),
+};
+const ALBUM_SCREENS = new Set(['albums-hub','snapback','nfl-select','nfl-team','wc-select','wc-country']);
+
+// pack opening state
+const PO = { phase:'idle', pack:null, cards:[], flipped:[], legDelay:0 };
+
+// ═══════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════
+
+function rc(r){ return {common:'#6B7280',rare:'#3B82F6',epic:'#c084fc',legendary:'#F2C94C'}[r]||'#888'; }
+
+function cardHTML(c, lg=false){
+  if(c.locked) return lockedHTML(c);
+  const statsH = Object.entries(c.stats||{}).map(([k,v])=>
+    `<div class="sc"><span class="sc-v">${v}</span><span class="sc-k">${k}</span></div>`).join('');
+  const soRows = Object.entries(c.stats||{}).map(([k,v])=>
+    `<div class="so-row">
+      <span class="so-key">${k}</span>
+      <span class="so-bar-wrap"><div class="so-bar" style="width:${v}%;background:${rc(c.r)}"></div></span>
+      <span class="so-val" style="color:${rc(c.r)}">${v}</span>
+    </div>`).join('');
+
+  // Image: team logo, ESPN headshot, YouTube thumbnail, or CSS silhouette
+  const isHeadshot = c.logoUrl && c.logoUrl.includes('/headshots/');
+  const imgArea = c.logoUrl
+    ? `<div class="card-img" style="padding:0">
+        <img class="player-photo" src="${c.logoUrl}" alt="${c.name}" referrerpolicy="no-referrer" onerror="this.style.display='none'"${isHeadshot ? '' : ' style="object-fit:contain;object-position:center;padding:10px;opacity:0.85"'}>
+      </div>`
+    : c.fotmobId
+    ? `<div class="card-img" style="padding:0">
+        <img class="player-photo" src="${FOTMOB}${c.fotmobId}.png" alt="${c.name}" onerror="handleImgErr(this)">
+      </div>`
+    : c.espnId
+    ? `<div class="card-img" style="padding:0">
+        <img class="player-photo" src="${ESPN}${c.espnId}.png&w=350&h=254" alt="${c.name}" referrerpolicy="no-referrer" onerror="handleImgErr(this)">
+      </div>`
+    : c.tiktokThumb
+    ? `<div class="card-img" style="padding:0">
+        <img class="player-photo" src="${c.tiktokThumb}" alt="${c.name}" onerror="this.style.display='none'" style="object-fit:cover;object-position:center center">
+      </div>`
+    : c.thumb
+    ? `<div class="card-img" style="padding:0">
+        <img class="player-photo" src="https://img.youtube.com/vi/${c.thumb}/hqdefault.jpg" alt="${c.name}" onerror="this.style.display='none'" style="object-fit:cover;object-position:center center">
+      </div>`
+    : `<div class="card-img"></div>`;
+
+  const extra = c.cls ? ` ${c.cls}` : '';
+  return `<div class="card ${c.r}${extra}">
+    <div class="card-top">
+      <span class="rb ${c.r}">${c.r.toUpperCase()}</span>
+      <span class="card-ovr ${c.r}">${c.ovr}</span>
+    </div>
+    ${imgArea}
+    <div class="stat-overlay">${soRows}</div>
+    <div class="card-bot">
+      <div class="card-name">${c.name}</div>
+      <div class="card-sub">${c.sub||''}</div>
+      <div class="card-stats">${statsH}</div>
+    </div>
+  </div>`;
+}
+
+function lockedHTML(c){
+  const displayName = (typeof c === 'string') ? c : (c.label || c.name || '?????');
+  const rarityClass = (c && c.r) ? ` ${c.r}` : '';
+  const lockSVG = `<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`;
+  const thumbImg = (c && c.thumb) ? `<img src="https://img.youtube.com/vi/${c.thumb}/mqdefault.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;opacity:0.22" onerror="this.style.display='none'">` : '';
+  return `<div class="card-locked${rarityClass}">${thumbImg}<div class="lk-icon">${lockSVG}</div><div class="lk-name">${displayName}</div><div class="lk-label">LOCKED</div></div>`;
+}
+
+function updateCoins(){
+  const v = S.coins.toLocaleString();
+  ['coin-disp','packs-coin-disp','cta-coin-disp'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=v;});
+  const row = document.querySelector('.coin-row');
+  if(row){ row.classList.remove('coin-flash'); void row.offsetWidth; row.classList.add('coin-flash'); }
+}
+
+function updateCollectionCounts(){
+  const sbOwned = S.snapbackOwned.size;
+  const sbTotal = snapbackCards.length;
+  // Non-snapback owned (NFL=24, WC=15) are static for now
+  const totalOwned = sbOwned + 24 + 15;
+  const totalCards = sbTotal + 30 + 21;
+  const pct = Math.round(totalOwned / totalCards * 100);
+  // Profile screen
+  const progLabel = document.querySelector('#screen-profile .prog-label span:last-child');
+  if(progLabel) progLabel.textContent = `${totalOwned} / ${totalCards}`;
+  const progFill = document.querySelector('#screen-profile .prog-fill');
+  if(progFill) progFill.style.width = pct + '%';
+  // Albums hub
+  const hubSub = document.querySelector('#screen-albums-hub .hub-sub');
+  if(hubSub) hubSub.textContent = `${totalOwned} of ${totalCards} cards collected`;
+  const sbProg = document.querySelector('#screen-albums-hub .col-tile.gold .ct-prog');
+  if(sbProg) sbProg.textContent = `${sbOwned} / ${sbTotal} cards`;
+}
+
+// ═══════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════
+
+const SCREEN_DEPTH = ['profile','albums-hub','snapback','nfl-select','nfl-team','wc-select','wc-country','packs'];
+function go(screen){
+  const prev = S.screen;
+  const prevEl = document.getElementById('screen-'+prev);
+  const nextEl = document.getElementById('screen-'+screen);
+  if(!nextEl) return;
+  const pIdx = SCREEN_DEPTH.indexOf(prev);
+  const nIdx = SCREEN_DEPTH.indexOf(screen);
+  const dir = (nIdx > pIdx || pIdx===-1) ? 1 : -1;
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  nextEl.classList.add('active');
+  if(prevEl && prevEl !== nextEl){
+    gsap.fromTo(prevEl, {x:0,opacity:1}, {x:dir*-40+'%',opacity:0,duration:.25,ease:'power2.in'});
+    gsap.fromTo(nextEl, {x:dir*40+'%',opacity:0}, {x:0,opacity:1,duration:.28,ease:'power2.out'});
+  } else {
+    gsap.fromTo(nextEl, {opacity:0,y:8}, {opacity:1,y:0,duration:.25});
+  }
+  S.screen = screen;
+  if(screen==='nfl-team')   renderNFLTeam();
+  if(screen==='wc-country') renderWCCountry();
+  if(screen==='profile')    setTimeout(animateProfileIn, 50);
+  document.getElementById('nav-profile').classList.toggle('active', screen==='profile');
+  document.getElementById('nav-albums').classList.toggle('active', ALBUM_SCREENS.has(screen));
+  document.getElementById('nav-packs').classList.toggle('active', screen==='packs');
+  setTimeout(initButtonSprings, 80);
+}
+
+// ═══════════════════════════════════════════════════════
+// SNAPBACK
+// ═══════════════════════════════════════════════════════
+
+function initTilt(scope){
+  if(typeof VanillaTilt === 'undefined') return;
+  const cards = (scope||document).querySelectorAll('.card:not([data-tilt])');
+  VanillaTilt.init(cards, {max:22, speed:320, glare:true, 'max-glare':.45, perspective:900});
+}
+
+function renderSnapback(){
+  document.getElementById('snapback-grid').innerHTML = snapbackCards.map(c=>cardHTML(c)).join('');
+  initTilt(document.getElementById('snapback-grid'));
+  setTimeout(()=>cascadeCards(document.getElementById('snapback-grid')), 50);
+}
+
+// ═══════════════════════════════════════════════════════
+// NFL
+// ═══════════════════════════════════════════════════════
+
+function renderNFLTeamList(){
+  document.getElementById('nfl-team-list').innerHTML = nflTeams.map(t=>`
+    <div class="team-tile ${t.featured?'featured':''}" onclick="pickNFL('${t.id}')">
+      <div class="te-badge" style="background:rgba(255,255,255,0.05);border-radius:10px;overflow:hidden;padding:4px">
+        <img src="${t.logoUrl}" style="width:100%;height:100%;object-fit:contain;" onerror="this.style.display='none'">
+      </div>
+      <div class="te-info">
+        <div class="te-name">${t.name}</div>
+        <div class="te-sub">${t.sub}</div>
+        ${t.featured?`<div class="feat-tag"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Featured Collection</div>`:`<div class="te-prog" style="color:var(--gold)">${t.prog} cards</div>`}
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px">
+        <div class="te-ovr" style="color:${rc(t.r)}">${t.ovr}</div>
+        <div class="te-chev">›</div>
+      </div>
+    </div>`).join('');
+}
+
+function pickNFL(id){ S.selectedNFLTeam=id; go('nfl-team'); }
+
+function renderNFLTeam(){
+  const t = nflTeams.find(x=>x.id===S.selectedNFLTeam); if(!t) return;
+  document.getElementById('nfl-team-title').textContent = t.name;
+  document.getElementById('nfl-team-badge').textContent = t.prog+' cards';
+  const sh = document.getElementById('nfl-team-sh');
+  if(t.featured){ sh.classList.add('ravens-sh'); document.getElementById('nfl-team-badge').textContent='★ Featured'; }
+  else sh.classList.remove('ravens-sh');
+  const bannerBg = t.featured
+    ? 'background:linear-gradient(135deg,#1a0a2e,#2d1b4e);border:1px solid rgba(242,201,76,.4);box-shadow:0 0 28px rgba(124,58,237,.2)'
+    : 'background:var(--surface);border:1px solid #252525';
+  document.getElementById('nfl-team-content').innerHTML = `
+    <div class="team-banner" style="${bannerBg}">
+      <div class="tb-emoji" style="overflow:hidden;border-radius:10px;padding:4px;background:rgba(255,255,255,0.05)">
+        <img src="${t.logoUrl}" style="width:100%;height:100%;object-fit:contain;" onerror="this.style.display='none'">
+      </div>
+      <div class="tb-info">
+        <div class="tb-name" style="color:${t.featured?'var(--gold)':'var(--text)'}">${t.name}</div>
+        <div class="tb-sub">${t.sub}</div>
+        ${t.featured?'<div class="feat-tag" style="margin-top:5px"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Featured Collection</div>':''}
+      </div>
+      <div class="tb-ovr" style="color:${rc(t.r)}">${t.ovr}</div>
+    </div>
+    <div style="padding:0 16px 16px"><div class="grid2">${t.cards.map(c=>cardHTML(c,true)).join('')}</div></div>`;
+  initTilt(document.getElementById('nfl-team-content'));
+  setTimeout(()=>cascadeCards(document.getElementById('nfl-team-content')), 50);
+}
+
+// ═══════════════════════════════════════════════════════
+// WORLD CUP
+// ═══════════════════════════════════════════════════════
+
+function renderWCList(){
+  document.getElementById('wc-country-list').innerHTML = wcCountries.map(c=>`
+    <div class="team-tile ${c.owned?'wc-owned':''}" onclick="pickWC('${c.id}')">
+      <div class="te-badge">${c.em}</div>
+      <div class="te-info">
+        <div class="te-name">${c.name}</div>
+        <div class="te-sub">${c.sub}</div>
+        <div class="te-prog" style="color:${c.prog.startsWith('0')?'var(--muted)':'#4ade80'}">${c.prog} cards</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px">
+        <div class="te-ovr" style="color:${rc(c.r)}">${c.ovr}</div>
+        <div class="te-chev">›</div>
+      </div>
+    </div>`).join('');
+}
+
+function pickWC(id){ S.selectedWCCountry=id; go('wc-country'); }
+
+function renderWCCountry(){
+  const c = wcCountries.find(x=>x.id===S.selectedWCCountry); if(!c) return;
+  document.getElementById('wc-country-title').textContent = c.name;
+  document.getElementById('wc-country-badge').textContent = c.prog+' cards';
+  document.getElementById('wc-country-content').innerHTML = `
+    <div class="team-banner" style="background:var(--surface);border:1px solid rgba(22,163,74,.22)">
+      <div class="tb-emoji">${c.em}</div>
+      <div class="tb-info">
+        <div class="tb-name">${c.name}</div>
+        <div class="tb-sub">${c.sub}</div>
+      </div>
+      <div class="tb-ovr" style="color:${rc(c.r)}">${c.ovr}</div>
+    </div>
+    <div style="padding:0 16px 16px"><div class="grid2">${c.cards.map(cd=>cardHTML(cd,true)).join('')}</div></div>`;
+  initTilt(document.getElementById('wc-country-content'));
+  setTimeout(()=>cascadeCards(document.getElementById('wc-country-content')), 50);
+}
+
+// ═══════════════════════════════════════════════════════
+// PACK SCREEN — 3D GLOWING CARDS
+// ═══════════════════════════════════════════════════════
+
+function renderPackList(){
+  const delays = [0, 0.8, 1.6];
+  document.getElementById('pack-list').innerHTML = packDefs.map((p,i)=>`
+    <div style="animation:packFloat 2.4s ease-in-out infinite;animation-delay:${delays[i]}s">
+      <div class="pack-3d ${p.selCls} ${S.selectedPack===p.id?'sel':''} ${S.coins<p.cost?'cant-afford':''}" onclick="pickPack('${p.id}')">
+        <div class="pack-3d-vis">
+          <div class="pack-3d-vis-text">${p.txt}</div>
+          <div class="pack-3d-vis-sub">${p.sub}</div>
+        </div>
+        <div class="pack-3d-info">
+          <div class="pack-3d-name">${p.name}</div>
+          <div class="pack-3d-desc">${p.desc}</div>
+        </div>
+        <div class="pack-3d-cost">${COIN_SVG(14)} ${p.cost}</div>
+      </div>
+    </div>`).join('');
+  const p = packDefs.find(x=>x.id===S.selectedPack);
+  const btn = document.getElementById('open-btn');
+  btn.textContent = `Open Pack — ${p.cost} Coins`;
+  btn.style.opacity = S.coins < p.cost ? '.4' : '1';
+  btn.disabled = S.coins < p.cost;
+}
+
+function pickPack(id){ S.selectedPack=id; renderPackList(); }
+
+// ═══════════════════════════════════════════════════════
+// CINEMATIC PACK OPENING
+// ═══════════════════════════════════════════════════════
+
+let _tsContainer = null;
+
+function startOpen(){
+  const p = packDefs.find(x=>x.id===S.selectedPack);
+  if(S.coins < p.cost) return;
+
+  PO.pack = p;
+  PO.phase = 'pulsing';
+  PO.cards = [];
+  PO.flipped = [];
+  PO.legDelay = 0;
+  PO.revealing = false;
+
+  const overlay = document.getElementById('pack-overlay');
+  overlay.classList.add('on');
+  document.getElementById('ov-close').classList.remove('on');
+  document.getElementById('po-fx').innerHTML = '';
+
+  // Render: pack graphic + TAP TO OPEN
+  document.getElementById('ov-body').innerHTML = `
+    <div class="po-pack-scene" id="po-scene" style="position:relative">
+      <div id="po-particles" style="position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden;border-radius:inherit"></div>
+      <div class="po-pack-physical ${p.visCls}" id="po-pack" onclick="onTapPack()" style="position:relative;z-index:1;opacity:0">
+        <div class="po-pack-notch"></div>
+        <div class="po-pack-inner" style="border:1px solid ${p.id==='snapback'?'rgba(242,201,76,.2)':p.id==='nfl'?'rgba(148,163,184,.18)':'rgba(52,211,153,.16)'}"></div>
+        <div class="po-pack-center">
+          <div class="po-pack-vis-text">${p.txt}</div>
+          <div class="po-pack-vis-sub">${p.sub}</div>
+        </div>
+        <div class="po-pack-bottom-bar" style="background:${p.id==='snapback'?'rgba(242,201,76,.75)':p.id==='nfl'?'rgba(148,163,184,.65)':'rgba(52,211,153,.65)'}"></div>
+      </div>
+      <div class="po-pack-name" style="position:relative;z-index:1">${p.name}</div>
+      <div class="po-tap-hint" style="position:relative;z-index:1;opacity:0">TAP TO OPEN</div>
+    </div>`;
+
+  // GSAP entrance
+  gsap.fromTo('#po-pack', {scale:.3, opacity:0, y:60}, {scale:1, opacity:1, y:0, duration:.6, ease:'back.out(1.8)'});
+  gsap.fromTo('.po-tap-hint', {opacity:0}, {opacity:1, duration:.4, delay:.7});
+  gsap.to('#po-pack', {y:-10, duration:1.6, ease:'sine.inOut', yoyo:true, repeat:-1, delay:.8});
+
+  // tsParticles ambient glow around pack
+  const particleColor = p.id==='snapback'?'#F2C94C':p.id==='nfl'?'#3B82F6':'#22c55e';
+  if(typeof tsParticles !== 'undefined'){
+    tsParticles.load('po-particles', {
+      fpsLimit:60,
+      particles:{
+        number:{value:28},
+        color:{value:particleColor},
+        shape:{type:'circle'},
+        opacity:{value:{min:.08,max:.45},animation:{enable:true,speed:.6,sync:false}},
+        size:{value:{min:2,max:5},animation:{enable:true,speed:2,sync:false}},
+        move:{enable:true,speed:.9,direction:'none',random:true,outModes:'out'},
+      },
+      background:{color:'transparent'}
+    }).then(c=>{ _tsContainer=c; });
+  }
+}
+
+function onTapPack(){
+  if(PO.phase !== 'pulsing') return;
+  PO.phase = 'exploding';
+
+  // Destroy particles
+  if(_tsContainer){ _tsContainer.destroy(); _tsContainer=null; }
+
+  // Deduct coins (auto-refill for demo so it never runs dry)
+  S.coins -= PO.pack.cost;
+  if(S.coins < 100) S.coins += 500;
+  updateCoins();
+
+  // Build card pool
+  const pool = buildPool(PO.pack.id);
+  const slots = ['legendary','epic','rare','rare','common'];
+
+  PO.cards = slots.map(wantR => {
+    const matching = pool.filter(c=>c.r===wantR);
+    const src = matching.length ? matching : pool;
+    const drawn = src[Math.floor(Math.random()*src.length)];
+    const isNew = PO.pack.id==='snapback' ? !S.snapbackOwned.has(drawn.id) : Math.random()>.35;
+    return {...drawn, isNew};
+  });
+  PO.flipped = new Array(5).fill(false);
+
+  const fx = document.getElementById('po-fx');
+  const packColor = PO.pack.id==='snapback'?'#F2C94C':PO.pack.id==='nfl'?'#3B82F6':'#22c55e';
+  const packEl = document.getElementById('po-pack');
+
+  // Step 1 (0ms): Float up + charge glow
+  gsap.killTweensOf('#po-pack'); // stop idle float
+  packEl.style.setProperty('--pack-color', packColor+'cc');
+  packEl.classList.add('po-pack-charging');
+  gsap.to('#po-pack', {y:-80, duration:.5, ease:'power2.out'});
+
+  // Step 2 (400ms): Wobble shake
+  setTimeout(()=>{
+    gsap.timeline()
+      .to('#po-pack', {x:-8, duration:.06, ease:'none'})
+      .to('#po-pack', {x: 8, duration:.06, ease:'none'})
+      .to('#po-pack', {x:-5, duration:.06, ease:'none'})
+      .to('#po-pack', {x: 5, duration:.06, ease:'none'})
+      .to('#po-pack', {x: 0, duration:.05, ease:'none'});
+  }, 400);
+
+  // Step 3 (700ms): Tear apart
+  setTimeout(()=>{
+    // Snapshot pack position for clone placement
+    const rect = packEl.getBoundingClientRect();
+    const ovRect = document.getElementById('pack-overlay').getBoundingClientRect();
+    const left = rect.left - ovRect.left;
+    const top  = rect.top  - ovRect.top;
+
+    // Clone top half
+    const topHalf = document.createElement('div');
+    topHalf.className = 'po-pack-half';
+    topHalf.style.cssText = `left:${left}px;top:${top}px;background:${packEl.style.background||''}`;
+    topHalf.innerHTML = packEl.outerHTML.replace(/id="po-pack"/, '').replace(/onclick="[^"]*"/, '');
+    topHalf.style.clipPath = 'inset(0 0 50% 0)';
+    fx.appendChild(topHalf);
+
+    // Clone bottom half
+    const botHalf = document.createElement('div');
+    botHalf.className = 'po-pack-half';
+    botHalf.style.cssText = `left:${left}px;top:${top + 95}px`;
+    botHalf.innerHTML = topHalf.innerHTML;
+    botHalf.style.clipPath = 'inset(50% 0 0 0)';
+    botHalf.style.backgroundPosition = '0 -95px';
+    fx.appendChild(botHalf);
+
+    // Hide original
+    gsap.to('#po-pack', {opacity:0, duration:.05});
+
+    // Fly halves apart
+    gsap.to(topHalf, {y:-200, rotation:-15, opacity:0, duration:.35, ease:'power2.in'});
+    gsap.to(botHalf, {y: 200, rotation: 12, opacity:0, duration:.35, ease:'power2.in'});
+
+    // White flash at tear moment
+    fx.innerHTML += '<div class="fx-flash3"></div>';
+    setTimeout(()=>{ const f=fx.querySelector('.fx-flash3'); if(f) f.remove(); }, 80);
+
+    // Shockwave ring
+    const sw = document.createElement('div');
+    sw.className = 'fx-shockwave';
+    fx.appendChild(sw);
+    setTimeout(()=>{ if(fx.contains(sw)) fx.removeChild(sw); }, 700);
+
+    // Shards flying outward
+    const shards = [];
+    for(let i=0;i<8;i++){
+      const shard = document.createElement('div');
+      shard.className = 'fx-shard';
+      shard.style.cssText = `--a:${i*45}deg;--r:${80+Math.random()*60}px;background:${packColor}`;
+      fx.appendChild(shard);
+      shards.push(shard);
+    }
+    setTimeout(()=>{ shards.forEach(s=>{ if(fx.contains(s)) fx.removeChild(s); }); }, 600);
+
+    setTimeout(()=>{ fx.innerHTML=''; renderCardsPhase(); }, 350);
+  }, 700);
+}
+
+function buildPool(packId){
+  if(packId==='snapback') return snapbackCards.filter(c=>!c.locked);
+  if(packId==='nfl')      return nflTeams.flatMap(t=>t.cards.filter(c=>!c.locked));
+  return wcCountries.flatMap(c=>c.cards.filter(c=>!c.locked));
+}
+
+function renderCardsPhase(){
+  PO.phase = 'cards';
+  document.getElementById('ov-close').classList.add('on');
+  document.getElementById('ov-body').innerHTML = `
+    <div class="po-cards-scene">
+      <div class="po-cards-row" id="po-cards-row">
+        ${PO.cards.map((_,i)=>`
+          <div class="po-card-slot" id="slot${i}" onclick="tapRevealCard(${i})">
+            <div class="po-rcard" id="rcard${i}">
+              <div class="po-rcard-back rarity-${PO.cards[i].r}"><div class="po-rcard-back-txt">${PO.pack.txt}</div></div>
+              <div class="po-rcard-front" id="rfront${i}"></div>
+            </div>
+          </div>`).join('')}
+      </div>
+      <div class="po-flip-hint" id="flip-hint" style="opacity:0">TAP TO REVEAL</div>
+    </div>`;
+
+  // Fly cards in one by one
+  PO.cards.forEach((_,i)=>{
+    setTimeout(()=>flyCardIn(i), 200 + i*420);
+  });
+  // Show hint after last card
+  const lastDelay = 200 + (PO.cards.length-1)*420 + 450;
+  setTimeout(()=>{
+    const hint = document.getElementById('flip-hint');
+    if(hint) hint.style.opacity = '1';
+  }, lastDelay);
+}
+
+function flyCardIn(i){
+  const slot = document.getElementById('slot'+i);
+  if(!slot) return;
+  gsap.fromTo(slot,
+    {y:170, scale:.72, opacity:0},
+    {y:0, scale:1, opacity:1, duration:.42, ease:'back.out(1.6)',
+      onComplete(){
+        const body = document.getElementById('ov-body');
+        gsap.timeline()
+          .to(body,{x:-5,duration:.04}).to(body,{x:5,duration:.04})
+          .to(body,{x:-3,duration:.04}).to(body,{x:0,duration:.04});
+        gsap.timeline()
+          .to(slot, {scale:1.1, duration:.1, ease:'power2.out'})
+          .to(slot, {scale:1,   duration:.14, ease:'power2.in'});
+      }
+    }
+  );
+}
+
+function tapRevealCard(i){
+  if(PO.phase !== 'cards' && PO.phase !== 'flipping') return;
+  if(PO.flipped[i]) return;
+  if(PO.revealing) return;
+  PO.revealing = true;
+  PO.phase = 'flipping';
+  PO.flipped[i] = true;
+
+  const slot  = document.getElementById('slot'+i);
+  const rcard = document.getElementById('rcard'+i);
+  const front = document.getElementById('rfront'+i);
+  const c = PO.cards[i];
+  const fx = document.getElementById('po-fx');
+  if(!rcard||!front) return;
+
+  function doFlip(){
+    PO.revealing = false;
+    front.innerHTML = cardHTML(c);
+    gsap.timeline()
+      .to(rcard, {rotateY:90,  duration:.27, ease:'power2.in', onComplete(){ triggerRarityFX(c.r, rcard); }})
+      .to(rcard, {rotateY:180, duration:.30, ease:'power2.out'});
+    if(PO.flipped.every(Boolean)){
+      const delay = 1500 + PO.legDelay;
+      setTimeout(()=>showEndScreen(), delay);
+      PO.legDelay = 0;
+    }
+    const hint = document.getElementById('flip-hint');
+    if(hint && PO.flipped.filter(Boolean).length < PO.cards.length) hint.textContent = 'TAP NEXT';
+  }
+
+  // Mandatory tension pulse — then branch by rarity
+  gsap.timeline({onComplete(){
+    if(c.r === 'rare'){
+      // Scale up first, then electric crackle
+      gsap.to(slot, {scale:1.12, duration:.18, ease:'power2.out'});
+      setTimeout(()=>{
+        for(let b=0;b<4;b++){
+          const bolt = document.createElement('div');
+          bolt.className = 'fx-bolt';
+          bolt.style.setProperty('--y', (12 + b*22)+'%');
+          bolt.style.setProperty('--d', (b*.06)+'s');
+          fx.appendChild(bolt);
+        }
+        setTimeout(()=>{ fx.innerHTML=''; gsap.to(slot,{scale:1,duration:.1}); doFlip(); }, 300);
+      }, 140);
+
+    } else if(c.r === 'epic'){
+      // Purple flash + slot shake + purple lightning
+      const pFlash = document.createElement('div');
+      pFlash.className = 'fx-epic-purple-flash';
+      fx.appendChild(pFlash);
+      gsap.timeline()
+        .to(slot,{x:-4,duration:.04}).to(slot,{x:4,duration:.04})
+        .to(slot,{x:-3,duration:.04}).to(slot,{x:3,duration:.04})
+        .to(slot,{x:-2,duration:.04}).to(slot,{x:0,duration:.04});
+      setTimeout(()=>{
+        for(let b=0;b<5;b++){
+          const bolt = document.createElement('div');
+          bolt.className = 'fx-bolt fx-bolt-purple';
+          bolt.style.setProperty('--y', (8 + b*18)+'%');
+          bolt.style.setProperty('--d', (b*.06)+'s');
+          fx.appendChild(bolt);
+        }
+      }, 120);
+      setTimeout(()=>{ fx.innerHTML=''; doFlip(); }, 560);
+
+    } else if(c.r === 'legendary'){
+      // Darken overlay + dim other cards + scale + burst + flash
+      const overlay = document.createElement('div');
+      overlay.className = 'fx-instant-black';
+      overlay.style.cssText = 'opacity:0;transition:opacity .45s;background:rgba(0,0,0,.88)';
+      fx.appendChild(overlay);
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{ overlay.style.opacity='1'; }));
+      // Dim sibling slots
+      document.querySelectorAll('.po-card-slot').forEach((s,idx)=>{
+        if(idx !== i) gsap.to(s,{opacity:.12,duration:.3,ease:'power2.out'});
+      });
+      gsap.to(slot, {scale:1.28, duration:.5, ease:'power2.out'});
+      spawnBurstParticles(fx, '#F2C94C', 24, 40, 130);
+      setTimeout(()=>{
+        const f = document.createElement('div'); f.className='fx-flash3'; fx.appendChild(f);
+        setTimeout(()=>{ if(f.parentElement) f.remove(); }, 80);
+      }, 580);
+      setTimeout(()=>{
+        fx.innerHTML='';
+        gsap.to(slot,{scale:1,duration:.12});
+        document.querySelectorAll('.po-card-slot').forEach(s=>gsap.to(s,{opacity:1,duration:.2}));
+        doFlip();
+      }, 940);
+
+    } else {
+      doFlip(); // common — no pre-animation
+    }
+  }})
+  .to(slot, {scale:1.15, duration:.2,  ease:'power2.out'})
+  .to(slot, {scale:.95,  duration:.15, ease:'power2.in'})
+  .to(slot, {scale:1.08, duration:.12, ease:'power2.out'})
+  .to(slot, {scale:1,    duration:.1,  ease:'power2.in'});
+}
+
+function triggerRarityFX(rarity, cardEl){
+  const fx = document.getElementById('po-fx');
+  if(!fx) return;
+
+  if(rarity==='legendary'){
+    PO.legDelay = 5500;
+    // Step 1: instant blackout
+    fx.innerHTML = '<div class="fx-instant-black"></div>';
+    // Step 2 (1000ms): gold beam
+    setTimeout(()=>{
+      const beam = document.createElement('div');
+      beam.className = 'fx-gold-beam';
+      fx.appendChild(beam);
+    }, 1000);
+    // Step 3 (1400ms): LEGENDARY text
+    setTimeout(()=>{
+      const txt = document.createElement('div');
+      txt.className = 'fx-leg-text';
+      txt.textContent = 'LEGENDARY';
+      fx.appendChild(txt);
+      gsap.fromTo(txt, {scale:3, opacity:0}, {scale:1, opacity:1, duration:.35, ease:'power3.out'});
+      setTimeout(()=>gsap.to(txt,{opacity:0,duration:.4,delay:.7}), 100);
+    }, 1400);
+    // Step 4 (1900ms): particles + shake + confetti
+    setTimeout(()=>{
+      fx.innerHTML = '<div class="fx-gold-beam" style="opacity:.4"></div>';
+      spawnParticles(fx,'#F2C94C',40);
+      const body = document.getElementById('ov-body');
+      gsap.timeline()
+        .to(body,{x:-14,duration:.07}).to(body,{x:14,duration:.07})
+        .to(body,{x:-10,duration:.07}).to(body,{x:10,duration:.07})
+        .to(body,{x:-6,duration:.07}).to(body,{x:6,duration:.07})
+        .to(body,{x:-3,duration:.05}).to(body,{x:0,duration:.05});
+      if(typeof confetti !== 'undefined'){
+        confetti({particleCount:100,spread:70,origin:{y:.5},colors:['#F2C94C','#fff','#ff6b00']});
+        setTimeout(()=>confetti({particleCount:80,spread:110,origin:{y:.4},colors:['#F2C94C','#ffcc00','#ffffff']}), 400);
+      }
+    }, 1900);
+    // Step 5 (2500ms): card float 3s
+    setTimeout(()=>{
+      const front = cardEl ? cardEl.querySelector('.po-rcard-front .card') : null;
+      if(front){
+        front.classList.add('card-leg-float');
+        gsap.to(front,{rotateY:15,duration:1.5,ease:'sine.inOut',yoyo:true,repeat:2});
+      }
+      fx.innerHTML='';
+    }, 2500);
+
+  } else if(rarity==='epic'){
+    // Phase 1: screen dark
+    fx.innerHTML = '<div class="fx-epic-dark"></div>';
+    // Phase 2 (200ms): fire embers + lightning
+    setTimeout(()=>{
+      spawnFireEmbers(fx);
+      const bolt = document.createElement('div');
+      bolt.className = 'fx-lightning-strike';
+      fx.appendChild(bolt);
+    }, 200);
+    setTimeout(()=>{ fx.innerHTML=''; }, 1800);
+
+  } else if(rarity==='rare'){
+    fx.innerHTML = `
+      <div class="fx-elec-bg"></div>
+      ${Array.from({length:6},(_,i)=>`<div class="fx-bolt" style="--y:${10+i*16}%;--d:${i*.08}s"></div>`).join('')}
+    `;
+    setTimeout(()=>{ fx.innerHTML=''; }, 900);
+
+  } else {
+    fx.innerHTML = '<div class="fx-common"></div>';
+    setTimeout(()=>{ fx.innerHTML=''; }, 300);
+  }
+}
+
+function spawnFireEmbers(container, count=24, colors=['#ff6b00','#ff3300']){
+  for(let i=0;i<count;i++){
+    const e = document.createElement('div');
+    e.className = 'fx-ember';
+    e.style.cssText = `left:${Math.random()*100}%;--x:${(Math.random()-0.5)*40}px;--drift:${(Math.random()-0.5)*60}px;--dur:${0.8+Math.random()*1.2}s;--del:${Math.random()*.4}s;background:${colors[Math.floor(Math.random()*colors.length)]}`;
+    container.appendChild(e);
+  }
+}
+
+function spawnBurstParticles(container, color, count, minDist=80, maxDist=220){
+  const frag = document.createDocumentFragment();
+  for(let i=0; i<count; i++){
+    const p = document.createElement('div');
+    p.className = 'fx-burst-particle';
+    const angle = (360/count)*i + Math.random()*20;
+    const dist  = minDist + Math.random()*(maxDist-minDist);
+    const size  = 4 + Math.random()*8;
+    const dur   = 0.55 + Math.random()*0.45;
+    p.style.cssText = `--a:${angle}deg;--d:${dist}px;--dur:${dur}s;width:${size}px;height:${size}px;background:${color};animation-delay:${Math.random()*.08}s`;
+    frag.appendChild(p);
+  }
+  container.appendChild(frag);
+}
+
+function spawnParticles(container, color, count){
+  const frag = document.createDocumentFragment();
+  for(let i=0; i<count; i++){
+    const p = document.createElement('div');
+    p.className = 'fx-particle';
+    const angle = (360/count)*i + Math.random()*15;
+    const dist  = 60 + Math.random()*90;
+    p.style.cssText = `--a:${angle}deg;--d:${dist}px;background:${color};animation-delay:${Math.random()*.2}s`;
+    frag.appendChild(p);
+  }
+  container.appendChild(frag);
+}
+
+function showEndScreen(){
+  // Persist newly acquired snapback cards
+  if(PO.pack.id==='snapback'){
+    PO.cards.filter(c=>c.isNew && c.id).forEach(c=>S.snapbackOwned.add(c.id));
+  }
+  const nw = PO.cards.filter(c=>c.isNew).length;
+  const du = PO.cards.length - nw;
+  const order = {legendary:4,epic:3,rare:2,common:1};
+  const bestRarity = PO.cards.reduce((best,c)=> order[c.r]>order[best] ? c.r : best, 'common');
+  const messages = {
+    legendary: 'YOU PULLED A LEGENDARY.\nThat\'s the moment.',
+    epic:      'EPIC PULL.\nYour collection just leveled up.',
+    rare:      'Solid pack. Keep grinding.',
+    common:    'More in the stack. Keep going.'
+  };
+  const msg = (messages[bestRarity]||messages.common).replace('\n','<br>');
+  document.getElementById('ov-body').innerHTML = `
+    <div class="po-end">
+      <div class="po-end-title" style="text-align:center;line-height:1.2">${msg}</div>
+      <div class="po-end-row">
+        ${PO.cards.map(c=>`
+          <div class="po-end-card">
+            <div class="${c.isNew?'badge-new':'badge-dupe'}">${c.isNew?'NEW':'TRADE'}</div>
+            ${cardHTML(c)}
+          </div>`).join('')}
+      </div>
+      <div class="po-end-stats">
+        <span>NEW: ${nw} to Collection</span>
+        <span>DUPE: ${du} Duplicates</span>
+      </div>
+      <div class="po-end-coins">${COIN_SVG(16)} ${S.coins.toLocaleString()} coins remaining</div>
+      <div class="po-end-btns">
+        <button class="btn-o" onclick="closeOverlay()">Open Another Pack</button>
+        <button class="btn-p" onclick="closeOverlay();go('albums-hub')">Go to Album</button>
+      </div>
+    </div>`;
+  PO.phase = 'complete';
+  if(bestRarity==='legendary' && typeof confetti !== 'undefined'){
+    confetti({particleCount:120,spread:80,origin:{y:.3},colors:['#F2C94C','#fff','#ff6b00']});
+  }
+}
+
+function closeOverlay(){
+  document.getElementById('pack-overlay').classList.remove('on');
+  document.getElementById('ov-close').classList.remove('on');
+  document.getElementById('po-fx').innerHTML = '';
+  PO.phase = 'idle';
+  renderPackList();
+  updateCoins();
+  updateCollectionCounts();
+}
+
+// ═══════════════════════════════════════════════════════
+// AVATAR PICKER
+// ═══════════════════════════════════════════════════════
+
+function openAvatarPicker(){
+  document.getElementById('avatar-picker').classList.add('on');
+}
+function closeAvatarPicker(){
+  document.getElementById('avatar-picker').classList.remove('on');
+}
+function pickAvatarColor(bg, textColor, el){
+  const av = document.getElementById('avatar-el');
+  av.style.background = bg;
+  av.style.color = textColor;
+  // clear emoji if set
+  if(av.dataset.emoji){ av.textContent = 'JR'; delete av.dataset.emoji; }
+  document.querySelectorAll('.ap-color').forEach(e=>e.classList.remove('sel'));
+  el.classList.add('sel');
+  document.querySelectorAll('.ap-emoji').forEach(e=>e.classList.remove('sel'));
+}
+function pickAvatarEmoji(emoji, el){
+  const av = document.getElementById('avatar-el');
+  av.textContent = emoji;
+  av.dataset.emoji = emoji;
+  document.querySelectorAll('.ap-emoji').forEach(e=>e.classList.remove('sel'));
+  el.classList.add('sel');
+  document.querySelectorAll('.ap-color').forEach(e=>e.classList.remove('sel'));
+}
+
+// ═══════════════════════════════════════════════════════
+// PROFILE SECTIONS
+// ═══════════════════════════════════════════════════════
+
+function renderFavTeams(){
+  const favTeams = [
+    {name:'Ravens', sport:'NFL',   logo:'https://a.espncdn.com/i/teamlogos/nfl/500/bal.png'},
+    {name:'Longhorns', sport:'NCAAF', logo:'https://a.espncdn.com/i/teamlogos/ncaa/500/251.png'},
+    {name:'USMNT',  sport:'Soccer', logo:'https://a.espncdn.com/i/teamlogos/soccer/500/315.png'},
+  ];
+  const row = document.getElementById('fav-teams-row');
+  if(!row) return;
+  row.innerHTML = favTeams.map(t=>`
+    <div class="fav-team-badge">
+      <div class="ftb-circle" style="background:#111;overflow:hidden;display:flex;align-items:center;justify-content:center">
+        <img src="${t.logo}" style="width:100%;height:100%;object-fit:contain;padding:4px" onerror="this.style.display='none'">
+      </div>
+      <span class="ftb-name">${t.name}</span>
+      <span class="ftb-sport">${t.sport}</span>
+    </div>
+  `).join('');
+}
+
+// TRADING & WANT ROWS
+// ═══════════════════════════════════════════════════════
+
+function renderTradingRow(){
+  const tradingCards = [
+    {name:'NFL Munich',    r:'epic',   ovr:'8.9', thumb:'UmxxIcU8l0o'},
+    {name:"Nat'l Champ",  r:'epic',   ovr:'9.1', thumb:'8fUjBOZDHx8'},
+    {name:'Kentucky Derby',r:'rare',  ovr:'8.6', thumb:'awIQBqlZfko'},
+    {name:'MACtion',       r:'rare',  ovr:'7.8', thumb:'6O_apqils7k'},
+  ];
+  const row = document.getElementById('trading-row');
+  if(!row) return;
+  row.innerHTML = tradingCards.map(c=>`
+    <div class="hcard-wrap">
+      <div class="card ${c.r}" style="width:82px;height:123px;flex-shrink:0;cursor:default">
+        <div class="card-top" style="padding:4px 5px 2px">
+          <span class="rb ${c.r}" style="font-size:7px">${c.r.toUpperCase()}</span>
+          <span class="card-ovr ${c.r}" style="font-size:20px">${c.ovr}</span>
+        </div>
+        <div class="card-img" style="margin:0 3px;border-radius:4px;flex:1;padding:0;overflow:hidden">
+          <img src="https://img.youtube.com/vi/${c.thumb}/mqdefault.jpg" style="width:100%;height:100%;object-fit:cover;object-position:center" onerror="this.style.display='none'">
+        </div>
+        <div class="card-bot" style="padding:3px 5px 5px">
+          <div class="card-name" style="font-size:10px">${c.name}</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderWantRow(){
+  const wants = [
+    {label:'PSG Champs Lg', sub:'LEGENDARY · 9.8', r:'legendary'},
+    {label:'Lamar Jackson', sub:'LEGENDARY · 9.9', r:'legendary'},
+    {label:'Saquon Barkley',sub:'LEGENDARY · 9.7', r:'legendary'},
+    {label:'Josh Allen',    sub:'LEGENDARY · 9.8', r:'legendary'},
+  ];
+  const row = document.getElementById('want-row');
+  if(!row) return;
+  row.innerHTML = wants.map(w=>`
+    <div class="want-card" style="border:1px solid rgba(242,201,76,.45);box-shadow:0 0 12px rgba(242,201,76,.18);background:linear-gradient(160deg,#1a1500,#0d0d00);position:relative">
+      <div style="opacity:.45"><svg width="16" height="16" viewBox="0 0 24 24" fill="rgba(242,201,76,1)" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+      <div class="wc-label" style="color:var(--gold);font-weight:600;font-size:8px;text-align:center;padding:0 6px;line-height:1.35">${w.label}</div>
+      <div class="wc-label" style="font-size:7px;color:var(--muted);margin-top:-2px">${w.sub}</div>
+      <div class="hcard-badge want" style="position:static;margin-top:5px">WANT</div>
+    </div>
+  `).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+
+function initButtonSprings(){
+  document.querySelectorAll('button, .nav-item, .col-tile, .team-tile').forEach(el=>{
+    if(el._springBound) return;
+    el._springBound = true;
+    el.addEventListener('pointerdown',()=>gsap.to(el,{scale:.94,duration:.1,ease:'power2.out'}));
+    el.addEventListener('pointerup',  ()=>gsap.to(el,{scale:1,duration:.4,ease:'back.out(2.5)'}));
+    el.addEventListener('pointerleave',()=>gsap.to(el,{scale:1,duration:.25}));
+  });
+}
+
+function cascadeCards(scope){
+  const cards = (scope||document).querySelectorAll('.card,.card-locked');
+  gsap.fromTo(cards,{y:35,opacity:0},{y:0,opacity:1,duration:.32,stagger:.06,ease:'back.out(1.3)'});
+}
+
+function animateProfileIn(){
+  const els = document.querySelectorAll('#screen-profile .profile-top, #screen-profile .p-card, #screen-profile .stats-row, #screen-profile .btn-row, #screen-profile .p-section');
+  gsap.fromTo(els,{y:28,opacity:0},{y:0,opacity:1,duration:.38,stagger:.07,ease:'power2.out'});
+  const fill = document.querySelector('.prog-fill');
+  if(fill){ const w=fill.style.width; fill.style.width='0'; gsap.to(fill,{width:w,duration:1.3,delay:.2,ease:'power2.out'}); }
+}
+
+renderSnapback();
+renderNFLTeamList();
+renderWCList();
+renderPackList();
+renderFavTeams();
+renderTradingRow();
+renderWantRow();
+initButtonSprings();
+updateCollectionCounts();
+setTimeout(animateProfileIn, 100);
+</script>
+</body>
+</html>
