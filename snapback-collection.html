@@ -555,8 +555,8 @@ body::before {
     <div class="coin-row"><svg width="26" height="26" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="10" fill="#F2C94C" stroke="#C49400" stroke-width="1.5"/><circle cx="11" cy="11" r="7" fill="none" stroke="#C49400" stroke-width="1"/><text x="11" y="15" text-anchor="middle" font-size="9" font-weight="900" fill="#8B6800" font-family="Arial">SC</text></svg> <span id="coin-disp">1,240</span> Coins</div>
   </div>
   <div class="p-card">
-    <div class="prog-label"><span>Collection Progress</span><span>45 / 63</span></div>
-    <div class="prog-bar"><div class="prog-fill" style="width:71.43%"></div></div>
+    <div class="prog-label"><span>Collection Progress</span><span>47 / 63</span></div>
+    <div class="prog-bar"><div class="prog-fill" style="width:75%"></div></div>
   </div>
   <div class="stats-row">
     <div class="stat-box"><span class="sv">38</span><span class="sk">Trivia Days</span></div>
@@ -617,14 +617,14 @@ body::before {
 <div id="screen-albums-hub" class="screen">
   <div class="hub-header">
     <div class="hub-title">My Collections</div>
-    <div class="hub-sub">45 of 63 cards collected</div>
+    <div class="hub-sub">47 of 63 cards collected</div>
   </div>
   <div class="hub-grid">
     <div class="col-tile gold" onclick="go('snapback')">
       <div class="ct-emoji"><img src="https://i.imgur.com/iEINPhe.jpeg" style="width:40px;height:36px;object-fit:cover;border-radius:4px;"></div>
       <div class="ct-name">Snapback Experiences</div>
       <div class="ct-sub">Live events</div>
-      <div class="ct-prog">6 / 12 cards</div>
+      <div class="ct-prog">8 / 12 cards</div>
     </div>
     <div class="col-tile blue" onclick="go('nfl-select')">
       <div class="ct-emoji" style="font-size:36px;line-height:1">🏈</div>
@@ -652,7 +652,7 @@ body::before {
   <div class="sh">
     <button class="back-btn" onclick="go('albums-hub')">← Back</button>
     <div class="sh-title">Snapback Experiences</div>
-    <div class="sh-badge">6/12</div>
+    <div class="sh-badge">8/12</div>
   </div>
   <div style="padding:14px 16px">
     <div class="grid3" id="snapback-grid"></div>
@@ -824,7 +824,7 @@ const nflTeams = [
       {id:'dak',  name:'Dak Prescott', sub:'QB', ovr:8.5, r:'rare', espnId:2577417, stats:{SPD:82,ARM:88,IQ:90,XF:85}},
       {locked:true,label:'Rico Dowdle',r:'rare'},{locked:true,label:'Micah Parsons',r:'epic'},{locked:true,label:'Brian Schottenheimer',r:'common'},
     ]},
-  {id:'eagles', name:'Philadelphia Eagles', sub:'Fly Eagles Fly', logoUrl:'https://a.espncdn.com/i/teamlogos/nfl/500/phi.png', ovr:9.3, r:'epic', prog:'0/5',
+  {id:'eagles', name:'Philadelphia Eagles', sub:'Fly Eagles Fly', logoUrl:'https://a.espncdn.com/i/teamlogos/nfl/500/phi.png', ovr:9.3, r:'epic', prog:'5/5',
     cards:[
       {id:'hurts',   name:'Jalen Hurts',          sub:'QB', ovr:9.2, r:'epic',      espnId:4040715, stats:{SPD:90,ARM:92,IQ:95,XF:96}},
       {id:'barkley', name:'Saquon Barkley',        sub:'RB', ovr:9.5, r:'legendary', espnId:3929630, stats:{SPD:97,PWR:95,IQ:90,XF:98}},
@@ -832,7 +832,7 @@ const nflTeams = [
       {id:'devonta', name:'DeVonta Smith',          sub:'WR', ovr:8.7, r:'rare',      espnId:4241478, stats:{SPD:94,RTE:92,HND:88,IQ:87}},
       {id:'jcarter', name:'Jalen Carter',           sub:'DT', ovr:9.1, r:'epic',      espnId:4685759, stats:{SPD:82,PWR:97,IQ:88,TKL:95}},
     ]},
-  {id:'bills', name:'Buffalo Bills', sub:'Mafia Season', logoUrl:'https://a.espncdn.com/i/teamlogos/nfl/500/buf.png', ovr:9.1, r:'epic', prog:'0/5',
+  {id:'bills', name:'Buffalo Bills', sub:'Mafia Season', logoUrl:'https://a.espncdn.com/i/teamlogos/nfl/500/buf.png', ovr:9.1, r:'epic', prog:'5/5',
     cards:[
       {id:'jallen',   name:'Josh Allen',     sub:'QB', ovr:9.7, r:'legendary', espnId:3918298, stats:{SPD:92,ARM:99,IQ:96,XF:98}},
       {id:'jcook',    name:'James Cook',     sub:'RB', ovr:8.6, r:'rare',      espnId:4379399, stats:{SPD:96,PWR:82,IQ:85,XF:88}},
@@ -840,7 +840,7 @@ const nflTeams = [
       {id:'shakir',   name:'Khalil Shakir',  sub:'WR', ovr:8.2, r:'rare',      espnId:4373678, stats:{SPD:92,RTE:88,HND:85,IQ:84}},
       {id:'dkincaid', name:'Dalton Kincaid', sub:'TE', ovr:8.3, r:'rare',      espnId:4385690, stats:{SPD:82,RTE:88,HND:90,IQ:86}},
     ]},
-  {id:'niners', name:'San Francisco 49ers', sub:'The Gold Rush', logoUrl:'https://a.espncdn.com/i/teamlogos/nfl/500/sf.png', ovr:9.0, r:'epic', prog:'0/5',
+  {id:'niners', name:'San Francisco 49ers', sub:'The Gold Rush', logoUrl:'https://a.espncdn.com/i/teamlogos/nfl/500/sf.png', ovr:9.0, r:'epic', prog:'5/5',
     cards:[
       {id:'purdy',    name:'Brock Purdy',           sub:'QB', ovr:9.0, r:'epic',      espnId:4361741, stats:{SPD:78,ARM:92,IQ:96,XF:91}},
       {id:'cmac',     name:'Christian McCaffrey',   sub:'RB', ovr:9.6, r:'legendary', espnId:3117251, stats:{SPD:95,PWR:88,IQ:97,XF:99}},
@@ -904,7 +904,7 @@ const S = {
   selectedNFLTeam: null,
   selectedWCCountry: null,
   screen: 'profile',
-  snapbackOwned: new Set(['psg-ucl','nfl-munich','natty-2026','ky-derby','maction','army-navy']),
+  snapbackOwned: new Set(['psg-ucl','nfl-munich','natty-2026','ky-derby','maction','army-navy','wrigley','the-swamp']),
 };
 const ALBUM_SCREENS = new Set(['albums-hub','snapback','nfl-select','nfl-team','wc-select','wc-country']);
 
@@ -986,9 +986,12 @@ function updateCoins(){
 function updateCollectionCounts(){
   const sbOwned = S.snapbackOwned.size;
   const sbTotal = snapbackCards.length;
-  // Non-snapback owned (NFL=24, WC=15) are static for now
-  const totalOwned = sbOwned + 24 + 15;
-  const totalCards = sbTotal + 30 + 21;
+  const nflOwned = nflTeams.reduce((s,t)=>s+t.cards.filter(c=>!c.locked).length,0);
+  const nflTotal = nflTeams.reduce((s,t)=>s+t.cards.length,0);
+  const wcOwned  = wcCountries.reduce((s,c)=>s+c.cards.filter(c=>!c.locked).length,0);
+  const wcTotal  = wcCountries.reduce((s,c)=>s+c.cards.length,0);
+  const totalOwned = sbOwned + nflOwned + wcOwned;
+  const totalCards = sbTotal + nflTotal + wcTotal;
   const pct = Math.round(totalOwned / totalCards * 100);
   // Profile screen
   const progLabel = document.querySelector('#screen-profile .prog-label span:last-child');
@@ -1000,6 +1003,13 @@ function updateCollectionCounts(){
   if(hubSub) hubSub.textContent = `${totalOwned} of ${totalCards} cards collected`;
   const sbProg = document.querySelector('#screen-albums-hub .col-tile.gold .ct-prog');
   if(sbProg) sbProg.textContent = `${sbOwned} / ${sbTotal} cards`;
+  const nflProg = document.querySelector('#screen-albums-hub .col-tile.blue .ct-prog');
+  if(nflProg) nflProg.textContent = `${nflOwned} / ${nflTotal} cards`;
+  const wcProg = document.querySelector('#screen-albums-hub .col-tile.green .ct-prog');
+  if(wcProg) wcProg.textContent = `${wcOwned} / ${wcTotal} cards`;
+  // Snapback screen badge
+  const sbBadge = document.querySelector('#screen-snapback .sh-badge');
+  if(sbBadge) sbBadge.textContent = `${sbOwned}/${sbTotal}`;
 }
 
 // ═══════════════════════════════════════════════════════
