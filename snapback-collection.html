@@ -42,7 +42,6 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 
 /* ── CARDS ─────────────────────────────────────────── */
 .card{border-radius:10px;overflow:hidden;position:relative;display:flex;flex-direction:column;cursor:pointer;transition:transform .2s ease,box-shadow .22s ease}
-.card:hover{transform:translateY(-8px)}
 .card:active{transform:scale(.95) !important}
 
 .card.common{background:linear-gradient(160deg,#1c1c1c,#111);border:1px solid var(--common);box-shadow:0 0 10px rgba(107,114,128,.25)}
@@ -51,10 +50,13 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .card.legendary{background:linear-gradient(160deg,#1a1a1a,#0d0d0d);border:2px solid transparent;box-shadow:0 0 20px rgba(242,201,76,.45),0 0 45px rgba(242,201,76,.2),0 0 80px rgba(242,201,76,.08);animation:legendaryPulse 2.5s ease-in-out infinite;position:relative}
 .card.legendary::before{content:'';position:absolute;inset:-2px;border-radius:11px;background:linear-gradient(90deg,#F2C94C,#ff6b6b,#9b59b6,#3B82F6,#00d4aa,#F2C94C);background-size:300% 100%;animation:holo 3s linear infinite;z-index:-1}
 
-.card.common:hover{box-shadow:0 14px 30px rgba(107,114,128,.55)!important}
-.card.rare:hover  {box-shadow:0 14px 32px rgba(59,130,246,.65)!important;border-color:#60A5FA!important}
-.card.epic:hover  {box-shadow:0 14px 36px rgba(192,132,252,.7)!important;border-color:#d8b4fe!important}
-.card.legendary:hover{box-shadow:0 0 50px rgba(242,201,76,.9),0 0 100px rgba(242,201,76,.5),0 0 140px rgba(242,201,76,.25)!important;transform:translateY(-8px) scale(1.02)!important}
+@media (hover: hover) {
+  .card:hover{transform:translateY(-8px)}
+  .card.common:hover{box-shadow:0 14px 30px rgba(107,114,128,.55)!important}
+  .card.rare:hover  {box-shadow:0 14px 32px rgba(59,130,246,.65)!important;border-color:#60A5FA!important}
+  .card.epic:hover  {box-shadow:0 14px 36px rgba(192,132,252,.7)!important;border-color:#d8b4fe!important}
+  .card.legendary:hover{box-shadow:0 0 50px rgba(242,201,76,.9),0 0 100px rgba(242,201,76,.5),0 0 140px rgba(242,201,76,.25)!important;transform:translateY(-8px) scale(1.02)!important}
+}
 
 .card-ravens-lj  {background:linear-gradient(160deg,#1a0a2e,#4a1a6e,#1a0a2e)!important}
 .card-ravens-team{background:linear-gradient(160deg,#1a0a2e,#2d1b4e)!important}
@@ -80,9 +82,9 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .player-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center 5%;z-index:2}
 .player-photo.err{display:none}
 
-/* HOVER STAT OVERLAY */
+/* STAT OVERLAY — hover only on pointer devices */
 .stat-overlay{position:absolute;inset:0;background:rgba(0,0,0,.88);backdrop-filter:blur(2px);border-radius:inherit;display:flex;flex-direction:column;justify-content:center;gap:4px;padding:8px;opacity:0;transition:opacity .2s;z-index:10;pointer-events:none}
-.card:hover .stat-overlay{opacity:1}
+@media (hover: hover) {.card:hover .stat-overlay{opacity:1}}
 .so-row{display:flex;align-items:center;gap:5px;width:100%}
 .so-key{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;width:26px;flex-shrink:0;line-height:1}
 .so-bar-wrap{flex:1;height:3px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden}
@@ -359,13 +361,14 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .p-section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .p-section-title{font-size:10px;font-weight:600;letter-spacing:.9px;text-transform:uppercase;color:var(--muted)}
 .edit-btn{background:none;border:none;font-size:13px;cursor:pointer;color:var(--muted);padding:3px 6px;border-radius:6px;transition:color .15s,background .15s}
-.edit-btn:hover{color:var(--gold);background:rgba(242,201,76,.08)}
+.edit-btn:active{color:var(--gold);background:rgba(242,201,76,.08)}
+@media (hover: hover) {.edit-btn:hover{color:var(--gold);background:rgba(242,201,76,.08)}}
 
 /* FAVORITE TEAMS */
 .fav-teams-row{display:flex;gap:10px}
 .fav-team-badge{flex:1;background:var(--surface);border-radius:12px;padding:12px 8px;display:flex;flex-direction:column;align-items:center;gap:7px;border:1px solid #252525;cursor:pointer;transition:transform .15s,border-color .15s}
-.fav-team-badge:hover{border-color:#333}
 .fav-team-badge:active{transform:scale(.95)}
+@media (hover: hover) {.fav-team-badge:hover{border-color:#333}}
 .ftb-circle{width:38px;height:38px;border-radius:50%;overflow:hidden;position:relative;flex-shrink:0;border:2px solid rgba(255,255,255,.08)}
 .ftb-half1{position:absolute;inset:0;right:50%}
 .ftb-half2{position:absolute;inset:0;left:50%}
@@ -377,7 +380,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .hscroll-row::-webkit-scrollbar{display:none}
 .hcard-wrap{position:relative;flex-shrink:0;width:82px}
 .hcard-wrap .card{height:123px;width:82px;cursor:default}
-.hcard-wrap .card:hover{transform:none}
+@media (hover: hover) {.hcard-wrap .card:hover{transform:none}}
 .hcard-wrap .card-ovr{font-size:14px}
 .hcard-wrap .card-name{font-size:9px}
 .hcard-wrap .card-sub{font-size:7px;margin:1px 0 2px}
@@ -394,11 +397,11 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 
 /* PREMIUM PROFILE BUTTONS */
 .btn-p{background:linear-gradient(120deg,#c49400,#F2C94C 50%,#c49400);background-size:200% auto;color:#000;border:none;border-radius:10px;padding:15px 20px;font-family:'Bebas Neue',cursive;font-size:17px;letter-spacing:1.5px;cursor:pointer;width:100%;transition:background-position .45s,box-shadow .2s,transform .1s;display:flex;align-items:center;justify-content:center;gap:10px}
-.btn-p:hover{background-position:right center;box-shadow:0 0 24px rgba(242,201,76,.4)}
 .btn-p:active{transform:scale(.97)}
+@media (hover: hover) {.btn-p:hover{background-position:right center;box-shadow:0 0 24px rgba(242,201,76,.4)}}
 .btn-o{background:linear-gradient(120deg,rgba(242,201,76,.07),rgba(242,201,76,.03));color:var(--gold);border:1.5px solid rgba(242,201,76,.5);border-radius:10px;padding:14px 20px;font-family:'Bebas Neue',cursive;font-size:17px;letter-spacing:1.5px;cursor:pointer;width:100%;transition:background .2s,box-shadow .2s,transform .1s;display:flex;align-items:center;justify-content:center;gap:10px}
-.btn-o:hover{background:rgba(242,201,76,.11);box-shadow:0 0 18px rgba(242,201,76,.22)}
 .btn-o:active{transform:scale(.97)}
+@media (hover: hover) {.btn-o:hover{background:rgba(242,201,76,.11);box-shadow:0 0 18px rgba(242,201,76,.22)}}
 .btn-icon{font-size:18px;line-height:1;flex-shrink:0}
 
 /* CTA PACK CARD */
@@ -416,11 +419,13 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .cta-pack-mini-sub{font-family:'Bebas Neue',cursive;font-size:7px;letter-spacing:2px;color:rgba(242,201,76,.5);position:relative;z-index:1}
 .cta-chev{font-size:26px;color:var(--gold);line-height:1;font-weight:300}
 .cta-albums-link{background:none;border:none;color:var(--muted);font-size:13px;font-weight:500;cursor:pointer;padding:8px 4px;text-align:center;width:100%;transition:color .15s;letter-spacing:.2px;font-family:'DM Sans',sans-serif}
-.cta-albums-link:hover{color:var(--gold)}
+.cta-albums-link:active{color:var(--gold)}
+@media (hover: hover) {.cta-albums-link:hover{color:var(--gold)}}
 
 /* AVATAR PICKER */
 .avatar{cursor:pointer;transition:transform .15s,box-shadow .2s}
-.avatar:hover{transform:scale(1.08)}
+.avatar:active{transform:scale(.93)}
+@media (hover: hover) {.avatar:hover{transform:scale(1.08)}}
 #avatar-picker{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:500;align-items:flex-end;justify-content:center;max-width:430px;left:50%;transform:translateX(-50%)}
 #avatar-picker.on{display:flex}
 .ap-sheet{background:var(--surface);border-radius:22px 22px 0 0;padding:20px 16px 40px;width:100%;animation:slideUp .3s ease both}
@@ -428,14 +433,17 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .ap-section-lbl{font-size:10px;font-weight:600;color:var(--muted);letter-spacing:.8px;text-transform:uppercase;margin-bottom:10px}
 .ap-colors{display:flex;gap:11px;flex-wrap:wrap;margin-bottom:18px}
 .ap-color{width:44px;height:44px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:transform .15s,border-color .15s;flex-shrink:0}
-.ap-color:hover{transform:scale(1.12)}
+.ap-color:active{transform:scale(1.12)}
+@media (hover: hover) {.ap-color:hover{transform:scale(1.12)}}
 .ap-color.sel{border-color:var(--gold)!important;box-shadow:0 0 12px rgba(242,201,76,.5)}
 .ap-emojis{display:flex;gap:10px;flex-wrap:wrap}
 .ap-emoji{width:54px;height:54px;border-radius:13px;background:var(--surface2);border:2px solid transparent;display:flex;align-items:center;justify-content:center;font-size:26px;cursor:pointer;transition:transform .15s,border-color .15s}
-.ap-emoji:hover{transform:scale(1.1)}
+.ap-emoji:active{transform:scale(1.1)}
+@media (hover: hover) {.ap-emoji:hover{transform:scale(1.1)}}
 .ap-emoji.sel{border-color:var(--gold);box-shadow:0 0 10px rgba(242,201,76,.4)}
 .ap-close-btn{display:block;width:100%;margin-top:18px;background:none;border:1px solid #2a2a2a;border-radius:10px;padding:13px;font-family:'Bebas Neue',cursive;font-size:15px;letter-spacing:1px;color:var(--muted);cursor:pointer;transition:border-color .15s}
-.ap-close-btn:hover{border-color:#444}
+.ap-close-btn:active{border-color:#444}
+@media (hover: hover) {.ap-close-btn:hover{border-color:#444}}
 
 /* ANIMATIONS */
 @keyframes screenFade{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
