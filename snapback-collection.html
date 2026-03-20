@@ -318,6 +318,9 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .po-end-row{display:flex;gap:7px;width:100%;justify-content:center;margin-bottom:16px}
 .po-end-card{flex:1;max-width:66px;aspect-ratio:2/3;position:relative}
 .po-end-card .card{height:100%;width:100%}
+.po-end-leg-wrap{display:block;height:100%;width:100%;border-radius:12px;padding:2px;background:linear-gradient(90deg,#F2C94C,#ff6b6b,#9b59b6,#3B82F6,#00d4aa,#F2C94C);background-size:300% 100%;animation:holo 3s linear infinite;box-shadow:0 0 18px rgba(242,201,76,.7),0 0 40px rgba(242,201,76,.3)}
+.po-end-leg-wrap .card.legendary{border:none;box-shadow:none;animation:none;height:100%;width:100%}
+.po-end-leg-wrap .card.legendary::before{display:none}
 .po-end-stats{display:flex;justify-content:space-between;width:100%;font-size:12px;color:var(--muted);padding:10px 0;border-top:1px solid #1e1e1e;border-bottom:1px solid #1e1e1e}
 .po-end-coins{font-family:'Bebas Neue',cursive;font-size:22px;color:var(--gold);margin:12px 0;display:flex;align-items:center;gap:6px}
 .po-end-btns{display:flex;flex-direction:column;gap:9px;width:100%}
@@ -897,7 +900,7 @@ const wcCountries = [
 ];
 
 const packDefs = [
-  {id:'snapback', name:'Snapback Pack',  desc:'6 Experience Cards',   cost:150, visCls:'po-snapback-vis', selCls:'pk-snapback', txt:'SB',  sub:'PACK',  color:'rgba(242,201,76,.9)'},
+  {id:'snapback', name:'Snapback Pack',  desc:'5 Experience Cards',   cost:150, visCls:'po-snapback-vis', selCls:'pk-snapback', txt:'SB',  sub:'PACK',  color:'rgba(242,201,76,.9)'},
   {id:'nfl',      name:'NFL Pack',       desc:'5 Player Cards',        cost:100, visCls:'po-nfl-vis',      selCls:'pk-nfl',      txt:'NFL', sub:'2026',  color:'rgba(59,130,246,.9)'},
   {id:'wc',       name:'World Cup Pack', desc:'5 International Cards', cost:100, visCls:'po-wc-vis',       selCls:'pk-wc',       txt:'WC',  sub:'2026',  color:'rgba(22,163,74,.9)'},
 ];
@@ -1265,10 +1268,13 @@ function onTapPack(){
   const pool = buildPool(PO.pack.id);
   const slots = ['legendary','epic','rare','rare','common'];
 
+  const usedIds = new Set();
   PO.cards = slots.map(wantR => {
-    const matching = pool.filter(c=>c.r===wantR);
-    const src = matching.length ? matching : pool;
+    const matching = pool.filter(c=>c.r===wantR && !usedIds.has(c.id));
+    const fallback = pool.filter(c=>!usedIds.has(c.id));
+    const src = matching.length ? matching : (fallback.length ? fallback : pool);
     const drawn = src[Math.floor(Math.random()*src.length)];
+    usedIds.add(drawn.id);
     const isNew = PO.pack.id==='snapback' ? !S.snapbackOwned.has(drawn.id) : Math.random()>.35;
     return {...drawn, isNew};
   });
@@ -1644,7 +1650,7 @@ function showEndScreen(){
         ${PO.cards.map(c=>`
           <div class="po-end-card">
             <div class="${c.isNew?'badge-new':'badge-dupe'}">${c.isNew?'NEW':'TRADE'}</div>
-            ${cardHTML(c)}
+            ${c.r==='legendary'?`<div class="po-end-leg-wrap">${cardHTML(c)}</div>`:cardHTML(c)}
           </div>`).join('')}
       </div>
       <div class="po-end-stats">
